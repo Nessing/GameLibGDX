@@ -11,7 +11,8 @@ public class MenuScreen extends BaseScreen {
 
     private Texture backLayer, backCloudy, car, flasher, bird1, bird2;
     private int x, y, timeout, moveCarHeight, timeoutBird;
-    private Vector2 touch, speedCloudTop, speedCloudBottom, cloudBottom, cloudTop, userBird, speedUserBird, temp;
+    private Vector2 touch, speedCloudTop, speedCloudBottom, cloudBottom, cloudTop, userBird, endPointUserBird;
+    private Vector2 testImg;
     private boolean down = true;
     private boolean toRight = true;
 
@@ -26,13 +27,14 @@ public class MenuScreen extends BaseScreen {
         bird2 = new Texture("bird_2.png");
 
         touch = new Vector2();
-        temp = new Vector2();
         cloudTop = new Vector2();
         cloudBottom = new Vector2();
         userBird = new Vector2();
         speedCloudTop = new Vector2(-1, 0);
         speedCloudBottom = new Vector2(-2, 0);
-        speedUserBird = new Vector2();
+        endPointUserBird = new Vector2();
+
+        testImg = new Vector2(1, 1);
     }
 
     @Override
@@ -42,9 +44,13 @@ public class MenuScreen extends BaseScreen {
         batch.setColor(1, 1, 1, 1);
         batch.draw(backLayer, 0, 0, 700, 500);
 
+        batch.draw(backCloudy, testImg.x, testImg.y);
+
+        testImg.scl(1);
+
         // сравнение координат птицы с местом нажатия мыши
         if (Math.round(userBird.x) == Math.round(touch.x) || Math.round(userBird.y) == Math.round(touch.y)) {
-            speedUserBird.set(0, 0);
+            endPointUserBird.set(0, 0);
         }
 
         // анимация птицы
@@ -62,7 +68,7 @@ public class MenuScreen extends BaseScreen {
             timeoutBird++;
         }
 
-        userBird.add(speedUserBird);
+        userBird.add(endPointUserBird);
         cloudTop.add(speedCloudTop);
         cloudBottom.add(speedCloudBottom);
 
@@ -143,11 +149,7 @@ public class MenuScreen extends BaseScreen {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         touch.set(screenX, Gdx.graphics.getHeight() - screenY);
-        speedUserBird.scl(0);
-        temp.set(touch);
-        temp.sub(userBird);
-        temp.nor();
-        speedUserBird.mulAdd(temp, 2);
+        endPointUserBird.set(touch.cpy().sub(userBird)).nor().scl(1.2f);
         return super.touchDown(screenX, screenY, pointer, button);
     }
 }
