@@ -54,6 +54,14 @@ public class Sprite extends Rect {
         );
     }
 
+    public boolean keyDown(int button) {
+        return false;
+    }
+
+    public boolean keyUp(int button) {
+        return false;
+    }
+
     public boolean touchDown(Vector2 touch, int pointer, int button) {
         return false;
     }
