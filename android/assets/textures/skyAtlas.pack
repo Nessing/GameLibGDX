@@ -1,0 +1,40 @@
+
+skyAtlas.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+cloudy1
+  rotate: false
+  xy: 1, 517
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+cloudy2
+  rotate: false
+  xy: 1, 259
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+cloudy3
+  rotate: false
+  xy: 259, 517
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+cloudy4
+  rotate: false
+  xy: 1, 1
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+star
+  rotate: false
+  xy: 259, 505
+  size: 11, 10
+  orig: 11, 10
+  offset: 0, 0
+  index: -1

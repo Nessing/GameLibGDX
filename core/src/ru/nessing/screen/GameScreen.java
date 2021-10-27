@@ -8,28 +8,27 @@ import com.badlogic.gdx.math.Vector2;
 import ru.nessing.base.BaseScreen;
 import ru.nessing.math.Rect;
 import ru.nessing.sprites.Airplane;
+import ru.nessing.sprites.BackButton;
 import ru.nessing.sprites.Background;
 import ru.nessing.sprites.Cloudy;
-import ru.nessing.sprites.ExitButton;
 import ru.nessing.sprites.ForestBack;
-import ru.nessing.sprites.StartButton;
 
-public class MenuScreen extends BaseScreen {
+public class GameScreen extends BaseScreen {
 
     private final Game game;
 
-    private Texture bg, birdTexture, forestTexture;
+    private Texture bg, airplaneTexture, forestTexture;
     private TextureAtlas sky, mainButtons;
 
     private Background background;
     private ForestBack forestBack;
     private ForestBack forestBack2;
     private Cloudy cloudy[];
+    private Airplane airplane;
 
-    private ExitButton exitButton;
-    private StartButton startButton;
+    private BackButton backButton;
 
-    public MenuScreen(Game game) {
+    public GameScreen(Game game) {
         this.game = game;
     }
 
@@ -38,14 +37,15 @@ public class MenuScreen extends BaseScreen {
         super.show();
 
         sky = new TextureAtlas("textures/skyAtlas.pack");
-        mainButtons = new TextureAtlas("textures/mainButtonAtlas.pack");
         bg = new Texture("textures/skyBack.png");
+        mainButtons = new TextureAtlas("textures/mainButtonAtlas.pack");
         forestTexture = new Texture("textures/forest.png");
-        birdTexture = new Texture("textures/airplane.png");
+        airplaneTexture = new Texture("textures/airplane.png");
 
         background = new Background(bg);
         forestBack = new ForestBack(forestTexture);
         forestBack2 = new ForestBack(forestTexture);
+        airplane = new Airplane(airplaneTexture);
 
         cloudy = new Cloudy[16];
         int num = 1;
@@ -54,16 +54,12 @@ public class MenuScreen extends BaseScreen {
             if (num == 4) num = 1;
             else num++;
         }
-
-        exitButton = new ExitButton(mainButtons);
-        startButton = new StartButton(mainButtons, game);
-
+        backButton = new BackButton(mainButtons, game);
     }
 
     @Override
     public void render(float deltaTime) {
         super.render(deltaTime);
-
         update(deltaTime);
         draw();
     }
@@ -78,8 +74,8 @@ public class MenuScreen extends BaseScreen {
         }
         forestBack.resize(worldBounds, false);
         forestBack2.resize(worldBounds, true);
-        exitButton.resize(worldBounds);
-        startButton.resize(worldBounds);
+        airplane.resize(worldBounds);
+        backButton.resize(worldBounds);
     }
 
     @Override
@@ -87,23 +83,35 @@ public class MenuScreen extends BaseScreen {
         super.dispose();
 
         sky.dispose();
-        mainButtons.dispose();
         bg.dispose();
         forestTexture.dispose();
-        birdTexture.dispose();
+        airplaneTexture.dispose();
+        mainButtons.dispose();
+    }
+
+    @Override
+    public boolean keyDown(int button) {
+        airplane.keyDown(button);
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int button) {
+        airplane.keyUp(button);
+        return false;
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-        exitButton.touchDown(touch, pointer, button);
-        startButton.touchDown(touch, pointer, button);
+        airplane.touchDown(touch, pointer, button);
+        backButton.touchDown(touch, pointer, button);
         return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer, int button) {
-        exitButton.touchUp(touch, pointer, button);
-        startButton.touchUp(touch, pointer, button);
+        airplane.touchUp(touch, pointer, button);
+        backButton.touchUp(touch, pointer, button);
         return false;
     }
 
@@ -111,6 +119,9 @@ public class MenuScreen extends BaseScreen {
         for (Cloudy cloudy : cloudy) {
             cloudy.update(deltaTime);
         }
+        airplane.update(deltaTime);
+        forestBack.update(deltaTime);
+        forestBack2.update(deltaTime);
     }
 
     private void draw() {
@@ -121,8 +132,8 @@ public class MenuScreen extends BaseScreen {
         }
         forestBack.draw(batch);
         forestBack2.draw(batch);
-        exitButton.draw(batch);
-        startButton.draw(batch);
+        airplane.draw(batch);
+        backButton.draw(batch);
         batch.end();
     }
 }

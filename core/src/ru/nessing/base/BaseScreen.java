@@ -46,7 +46,7 @@ public class BaseScreen implements Screen, InputProcessor {
         screenBounds.setLeft(0);
         screenBounds.setBottom(0);
 
-        float aspect = width / height;
+        float aspect = width / (float) height;
         worldBounds.setHeight(1f);
         worldBounds.setWidth(1f * aspect);
         MatrixUtils.calcTransitionMatrix(screenToWorld, screenBounds, worldBounds);
