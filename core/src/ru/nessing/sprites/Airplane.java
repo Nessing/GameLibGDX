@@ -1,7 +1,6 @@
 package ru.nessing.sprites;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
@@ -12,12 +11,14 @@ public class Airplane extends Sprite {
 //    private Vector2 position = new Vector2();
 //    private Vector2 endPosition = new Vector2();
 //    private Vector2 checkPosStop = new Vector2();
+    private Rect worldBounds;
     private Vector2 direction;
     private final float SPEED = 0.3f;
     private int push;
 
-    public Airplane(Texture texture) {
-        super(new TextureRegion(texture,1700, 150, 200, 300));
+    public Airplane(TextureAtlas textureAtlas, String name) {
+        super(new TextureRegion(textureAtlas.findRegion(name).getTexture(), 0, 500, 2000, 600));
+//        super(textureAtlas.findRegion(name));
         direction = new Vector2(0, 0);
         pos.set(-0.6f, 0);
     }
@@ -25,6 +26,7 @@ public class Airplane extends Sprite {
     @Override
     public void resize(Rect worldBounds) {
         setHeightProportion(0.1f);
+        this.worldBounds = worldBounds;
     }
 
     // 51 ↑  47 ↓  29 ←  32 →
@@ -57,8 +59,7 @@ public class Airplane extends Sprite {
 //        checkPosStop.set(touch);
         if (touch.y > 0) {
             push = 51;
-        }
-        else if (touch.y < 0) {
+        } else if (touch.y < 0) {
             push = 47;
         }
         return false;
@@ -77,6 +78,12 @@ public class Airplane extends Sprite {
 //        } else {
 //            position.add(endPosition);
 //        }
+//        if (pos.y >= 0.5f) {
+//            pos.y = 0.5f;
+//        }
+//        if (pos.y <= -0.3f) {
+//            pos.y = -0.3f;
+//        }
         if (push == 51) {
             direction.set(0, SPEED);
             pos.mulAdd(direction, deltaTime);
@@ -93,7 +100,19 @@ public class Airplane extends Sprite {
             direction.set(SPEED, 0);
             pos.mulAdd(direction, deltaTime);
         }
-        else {
+
+        if (pos.x <= worldBounds.getLeft() + 0.2f) {
+            pos.x = worldBounds.getLeft() + 0.2f;
+        }
+        if (pos.x >= worldBounds.getRight() - 0.2f) {
+            pos.x = worldBounds.getRight() - 0.2f;
+        }
+        if (pos.y >= worldBounds.getTop() - 0.05f) {
+            pos.y = worldBounds.getTop() - 0.05f;
+        }
+        if (pos.y <= worldBounds.getBottom() + 0.2f) {
+            pos.y = worldBounds.getBottom() + 0.2f;
+        } else {
             direction.set(0, 0);
         }
 

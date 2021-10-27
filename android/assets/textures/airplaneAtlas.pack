@@ -1,0 +1,19 @@
+
+airplane.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+userAirplane
+  rotate: false
+  xy: 1, 514
+  size: 1901, 511
+  orig: 1901, 511
+  offset: 0, 0
+  index: -1
+userAirplaneDamage
+  rotate: false
+  xy: 1, 1
+  size: 1901, 511
+  orig: 1901, 511
+  offset: 0, 0
+  index: -1
