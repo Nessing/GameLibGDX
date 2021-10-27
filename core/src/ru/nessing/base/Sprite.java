@@ -43,16 +43,16 @@ public class Sprite extends Rect {
         );
     }
 
-    public void draw(SpriteBatch batch, float x, float y) {
-        batch.draw(
-                regions[frame],
-                x, y,
-                halfWidth, halfHeight,
-                getWidth(), getHeight(),
-                scale, scale,
-                angle
-        );
-    }
+//    public void draw(SpriteBatch batch, float x, float y) {
+//        batch.draw(
+//                regions[frame],
+//                x, y,
+//                halfWidth, halfHeight,
+//                getWidth(), getHeight(),
+//                scale, scale,
+//                angle
+//        );
+//    }
 
     public boolean keyDown(int button) {
         return false;

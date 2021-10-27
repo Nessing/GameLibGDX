@@ -1,6 +1,7 @@
 package ru.nessing.sprites;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
@@ -16,7 +17,7 @@ public class Airplane extends Sprite {
     private int push;
 
     public Airplane(Texture texture) {
-        super(new TextureRegion(texture));
+        super(new TextureRegion(texture,1700, 150, 200, 300));
         direction = new Vector2(0, 0);
         pos.set(-0.6f, 0);
     }
@@ -29,7 +30,6 @@ public class Airplane extends Sprite {
     // 51 ↑  47 ↓  29 ←  32 →
     @Override
     public boolean keyDown(int button) {
-        System.out.println(button);
         if (button == 51) {
             push = 51;
         }

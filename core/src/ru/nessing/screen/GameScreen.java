@@ -17,7 +17,7 @@ public class GameScreen extends BaseScreen {
 
     private final Game game;
 
-    private Texture bg, birdTexture, forestTexture;
+    private Texture bg, airplaneTexture, forestTexture;
     private TextureAtlas sky, mainButtons;
 
     private Background background;
@@ -40,13 +40,12 @@ public class GameScreen extends BaseScreen {
         bg = new Texture("textures/skyBack.png");
         mainButtons = new TextureAtlas("textures/mainButtonAtlas.pack");
         forestTexture = new Texture("textures/forest.png");
-        birdTexture = new Texture("textures/airplane.png");
+        airplaneTexture = new Texture("textures/airplane.png");
 
         background = new Background(bg);
         forestBack = new ForestBack(forestTexture);
         forestBack2 = new ForestBack(forestTexture);
-        airplane = new Airplane(birdTexture);
-//        airplane.pos.set(-0.5f, 0);
+        airplane = new Airplane(airplaneTexture);
 
         cloudy = new Cloudy[16];
         int num = 1;
@@ -86,7 +85,7 @@ public class GameScreen extends BaseScreen {
         sky.dispose();
         bg.dispose();
         forestTexture.dispose();
-        birdTexture.dispose();
+        airplaneTexture.dispose();
         mainButtons.dispose();
     }
 
