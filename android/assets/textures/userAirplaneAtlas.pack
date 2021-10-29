@@ -1,0 +1,19 @@
+
+userAirplane.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+airplaneUser
+  rotate: false
+  xy: 1, 285
+  size: 1903, 1026
+  orig: 1903, 1026
+  offset: 0, 0
+  index: -1
+bullet
+  rotate: false
+  xy: 1, 1
+  size: 1281, 282
+  orig: 1281, 282
+  offset: 0, 0
+  index: -1

@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.nessing.base.BaseScreen;
 import ru.nessing.math.Rect;
+import ru.nessing.pool.BulletPool;
 import ru.nessing.sprites.Airplane;
 import ru.nessing.sprites.BackButton;
 import ru.nessing.sprites.Background;
@@ -26,6 +27,8 @@ public class GameScreen extends BaseScreen {
     private Cloudy cloudy[];
     private Airplane airplane;
 
+    private BulletPool bulletPool;
+
     private BackButton backButton;
 
     public GameScreen(Game game) {
@@ -40,13 +43,16 @@ public class GameScreen extends BaseScreen {
         bg = new Texture("textures/skyBack.png");
         mainButtons = new TextureAtlas("textures/mainButtonAtlas.pack");
         forestTexture = new Texture("textures/forest.png");
-        airplaneAtlas = new TextureAtlas("textures/airplaneAtlas.pack");
+        airplaneAtlas = new TextureAtlas("textures/userAirplaneAtlas.pack");
 
         background = new Background(bg);
         forestBack = new ForestBack(forestTexture);
         forestBack2 = new ForestBack(forestTexture);
 
-        airplane = new Airplane(airplaneAtlas, "userAirplane");
+        bulletPool = new BulletPool();
+
+        airplane = new Airplane(airplaneAtlas, "airplaneUser", bulletPool);
+
 
         cloudy = new Cloudy[16];
         int num = 1;
@@ -62,6 +68,7 @@ public class GameScreen extends BaseScreen {
     public void render(float deltaTime) {
         super.render(deltaTime);
         update(deltaTime);
+        freeAllDestroyed();
         draw();
     }
 
@@ -88,6 +95,7 @@ public class GameScreen extends BaseScreen {
         forestTexture.dispose();
         airplaneAtlas.dispose();
         mainButtons.dispose();
+        bulletPool.dispose();
     }
 
     @Override
@@ -120,9 +128,14 @@ public class GameScreen extends BaseScreen {
         for (Cloudy cloudy : cloudy) {
             cloudy.update(deltaTime);
         }
+        bulletPool.updateActiveObjects(deltaTime);
         airplane.update(deltaTime);
         forestBack.update(deltaTime);
         forestBack2.update(deltaTime);
+    }
+
+    private void freeAllDestroyed() {
+        bulletPool.freeAllDestroyed();
     }
 
     private void draw() {
@@ -133,6 +146,7 @@ public class GameScreen extends BaseScreen {
         }
         forestBack.draw(batch);
         forestBack2.draw(batch);
+        bulletPool.drawActiveObjects(batch);
         airplane.draw(batch);
         backButton.draw(batch);
         batch.end();

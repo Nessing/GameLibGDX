@@ -1,126 +1,208 @@
 package ru.nessing.sprites;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.nessing.base.Sprite;
 import ru.nessing.math.Rect;
+import ru.nessing.pool.BulletPool;
 
 public class Airplane extends Sprite {
-//    private Vector2 position = new Vector2();
-//    private Vector2 endPosition = new Vector2();
-//    private Vector2 checkPosStop = new Vector2();
     private Rect worldBounds;
     private Vector2 direction;
     private final float SPEED = 0.3f;
-    private int push;
+    private final float HEIGHT = 0.1f;
+    private final int INVALID_POINTER = -1;
 
-    public Airplane(TextureAtlas textureAtlas, String name) {
-        super(new TextureRegion(textureAtlas.findRegion(name).getTexture(), 0, 500, 2000, 600));
-//        super(textureAtlas.findRegion(name));
-        direction = new Vector2(0, 0);
-        pos.set(-0.6f, 0);
+    private final TextureRegion bulletRegion;
+    private final BulletPool bulletPool;
+    private final Vector2 bulletSpeed;
+    private final float bulletHeight;
+    private final int damage;
+
+    private Vector2 positionBullet = new Vector2();
+    private int upPointer = INVALID_POINTER;
+    private int downPointer = INVALID_POINTER;
+
+    private boolean isPressedLeft;
+    private boolean isPressedRight;
+    private boolean isPressedDown;
+    private boolean isPressedUp;
+
+    public Airplane(TextureAtlas textureAtlas, String name, BulletPool bulletPool) {
+        super(textureAtlas.findRegion(name), 2, 1, 2);
+        this.bulletPool = bulletPool;
+        this.bulletRegion = textureAtlas.findRegion("bullet");
+        this.bulletSpeed = new Vector2(1f, 0);
+        this.bulletHeight = 0.01f;
+        this.damage = 1;
+        this.direction = new Vector2(0, 0);
+        this.pos.set(-0.6f, 0);
     }
 
     @Override
     public void resize(Rect worldBounds) {
-        setHeightProportion(0.1f);
+        super.resize(worldBounds);
+        setHeightProportion(HEIGHT);
         this.worldBounds = worldBounds;
     }
 
     // 51 ↑  47 ↓  29 ←  32 →
     @Override
     public boolean keyDown(int button) {
-        if (button == 51) {
-            push = 51;
+        switch (button) {
+            case Input.Keys.W :
+            case Input.Keys.UP :
+                isPressedUp = true;
+                moveUp();
+                break;
+            case Input.Keys.S :
+            case Input.Keys.DOWN :
+                isPressedDown = true;
+                moveDown();
+                break;
+            case Input.Keys.A :
+            case Input.Keys.LEFT :
+                isPressedLeft = true;
+                moveLeft();
+                break;
+            case Input.Keys.D :
+            case Input.Keys.RIGHT :
+                isPressedRight = true;
+                moveRight();
+                break;
+            case Input.Keys.NUMPAD_0 :
+                shoot();
+                break;
         }
-        if (button == 47) {
-            push = 47;
-        }
-        if (button == 29) {
-            push = 29;
-        }
-        if (button == 32) {
-            push = 32;
-        }
+        if (isPressedUp && isPressedRight) moveUpAndRight();
+        if (isPressedUp && isPressedLeft) moveUpAndLeft();
+        if (isPressedDown && isPressedRight) moveDownAndRight();
+        if (isPressedDown && isPressedLeft) moveDownAndLeft();
         return false;
     }
 
     @Override
     public boolean keyUp(int button) {
-        push = 0;
+        switch (button) {
+            case Input.Keys.W :
+            case Input.Keys.UP :
+                isPressedUp = false;
+                if (isPressedDown) moveDown();
+                else if (isPressedRight) moveRight();
+                else if (isPressedLeft) moveLeft();
+                else moveStop();
+                break;
+            case Input.Keys.S :
+            case Input.Keys.DOWN :
+                isPressedDown = false;
+                if (isPressedUp) moveUp();
+                else if (isPressedRight) moveRight();
+                else if (isPressedLeft) moveLeft();
+                else moveStop();
+                break;
+            case Input.Keys.A :
+            case Input.Keys.LEFT :
+                isPressedLeft = false;
+                if (isPressedRight) moveRight();
+                else if (isPressedUp) moveUp();
+                else if (isPressedDown) moveDown();
+                else moveStop();
+                break;
+            case Input.Keys.D :
+            case Input.Keys.RIGHT :
+                isPressedRight = false;
+                if (isPressedLeft) moveLeft();
+                else if (isPressedUp) moveUp();
+                else if (isPressedDown) moveDown();
+                else moveStop();
+                break;
+        }
         return false;
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-//        endPosition.set(touch.cpy().sub(position)).nor().scl(0.006f);
-//        checkPosStop.set(touch);
         if (touch.y > 0) {
-            push = 51;
+            if (upPointer != INVALID_POINTER) return false;
+            else upPointer = pointer;
+            moveUp();
         } else if (touch.y < 0) {
-            push = 47;
+            if (downPointer != INVALID_POINTER) return false;
+            else downPointer = pointer;
+            moveDown();
         }
         return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer, int button) {
-        push = 0;
+        if (pointer == upPointer) {
+            upPointer = INVALID_POINTER;
+            if (downPointer != INVALID_POINTER) moveDown();
+            else moveStop();
+        } else if (pointer == downPointer) {
+            downPointer = INVALID_POINTER;
+            if (upPointer != INVALID_POINTER) moveUp();
+            else moveStop();
+        }
+        moveStop();
         return false;
     }
 
     @Override
     public void update(float deltaTime) {
-//        if (position.dst(checkPosStop) <= endPosition.len()) {
-//            endPosition.set(0, 0);
-//        } else {
-//            position.add(endPosition);
-//        }
-//        if (pos.y >= 0.5f) {
-//            pos.y = 0.5f;
-//        }
-//        if (pos.y <= -0.3f) {
-//            pos.y = -0.3f;
-//        }
-        if (push == 51) {
-            direction.set(0, SPEED);
-            pos.mulAdd(direction, deltaTime);
+        super.update(deltaTime);
+        pos.mulAdd(direction, deltaTime);
+        if (getLeft() <= worldBounds.getLeft()) {
+            setLeft(worldBounds.getLeft());
         }
-        if (push == 47) {
-            direction.set(0, -SPEED);
-            pos.mulAdd(direction, deltaTime);
+        if (getRight() >= worldBounds.getRight() - 0.5f) {
+            setRight(worldBounds.getRight() - 0.5f);
         }
-        if (push == 29) {
-            direction.set(-SPEED, 0);
-            pos.mulAdd(direction, deltaTime);
+        if (getTop() >= worldBounds.getTop()) {
+            setTop(worldBounds.getTop());
         }
-        if (push == 32) {
-            direction.set(SPEED, 0);
-            pos.mulAdd(direction, deltaTime);
+        if (getBottom() <= worldBounds.getBottom() + 0.2f) {
+            setBottom(worldBounds.getBottom() + 0.2f);
         }
-
-        if (pos.x <= worldBounds.getLeft() + 0.2f) {
-            pos.x = worldBounds.getLeft() + 0.2f;
-        }
-        if (pos.x >= worldBounds.getRight() - 0.2f) {
-            pos.x = worldBounds.getRight() - 0.2f;
-        }
-        if (pos.y >= worldBounds.getTop() - 0.05f) {
-            pos.y = worldBounds.getTop() - 0.05f;
-        }
-        if (pos.y <= worldBounds.getBottom() + 0.2f) {
-            pos.y = worldBounds.getBottom() + 0.2f;
-        } else {
-            direction.set(0, 0);
-        }
-
     }
 
-//    public void draw(SpriteBatch batch) {
-//        // Остановка в указанной мышью точке
-//
-//        super.draw(batch, position.x, position.y);
-//    }
+    private void moveUp() {
+        direction.set(0, SPEED);
+    }
+    private void moveDown() {
+        direction.set(0, -SPEED);
+    }
+    private void moveRight() {
+        direction.set(SPEED, 0);
+    }
+    private void moveLeft() {
+        direction.set(-SPEED, 0);
+    }
+    private void moveUpAndRight() {
+        direction.set(SPEED, SPEED);
+    }
+    private void moveUpAndLeft() {
+        direction.set(-SPEED, SPEED);
+    }
+    private void moveDownAndRight() {
+        direction.set(SPEED, -SPEED);
+    }
+    private void moveDownAndLeft() {
+        direction.set(-SPEED, -SPEED);
+    }
+
+    private void moveStop() {
+        direction.set(0, 0);
+    }
+
+    private void shoot() {
+        Bullet bullet = bulletPool.obtain();
+        positionBullet.set(this.pos.x + 0.15f, this.pos.y);
+        bullet.set(this, bulletRegion, this.positionBullet, bulletSpeed, worldBounds, bulletHeight, damage);
+    }
+
 }
