@@ -1,6 +1,9 @@
 package ru.nessing.screen;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -21,6 +24,9 @@ public class GameScreen extends BaseScreen {
     private Texture bg, forestTexture;
     private TextureAtlas sky, mainButtons, airplaneAtlas;
 
+    private final Sound clickSound = Gdx.audio.newSound(Gdx.files.internal("sounds/click.wav"));
+    private final Music backMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/Single for gameScreen.mp3"));
+
     private Background background;
     private ForestBack forestBack;
     private ForestBack forestBack2;
@@ -39,6 +45,9 @@ public class GameScreen extends BaseScreen {
     public void show() {
         super.show();
 
+        backMusic.play();
+        backMusic.setLooping(true);
+
         sky = new TextureAtlas("textures/skyAtlas.pack");
         bg = new Texture("textures/skyBack.png");
         mainButtons = new TextureAtlas("textures/mainButtonAtlas.pack");
@@ -52,12 +61,12 @@ public class GameScreen extends BaseScreen {
         bulletPool = new BulletPool();
 
         airplane = new Airplane(airplaneAtlas, "airplaneUser", bulletPool);
-
+        airplane.startSounds();
 
         cloudy = new Cloudy[16];
         int num = 1;
         for (int i = 0; i < cloudy.length; i++) {
-            cloudy[i] = new Cloudy(sky, "cloudy" + num);
+            cloudy[i] = new Cloudy(sky, "cloudy" + num, -0.15f, -0.2f);
             if (num == 4) num = 1;
             else num++;
         }
@@ -96,6 +105,8 @@ public class GameScreen extends BaseScreen {
         airplaneAtlas.dispose();
         mainButtons.dispose();
         bulletPool.dispose();
+        airplane.stopSounds();
+        backMusic.dispose();
     }
 
     @Override
@@ -114,6 +125,10 @@ public class GameScreen extends BaseScreen {
     public boolean touchDown(Vector2 touch, int pointer, int button) {
         airplane.touchDown(touch, pointer, button);
         backButton.touchDown(touch, pointer, button);
+        if (backButton.isMe(touch)) {
+            clickSound.play();
+            airplane.pressButtonStopMove();
+        }
         return false;
     }
 

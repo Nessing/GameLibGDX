@@ -1,6 +1,9 @@
 package ru.nessing.screen;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -17,6 +20,9 @@ import ru.nessing.sprites.StartButton;
 public class MenuScreen extends BaseScreen {
 
     private final Game game;
+    private final Sound screenSound = Gdx.audio.newSound(Gdx.files.internal("sounds/startScreen.wav"));
+    private final Sound clickSound = Gdx.audio.newSound(Gdx.files.internal("sounds/click.wav"));
+    private final Music backMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/Single intro for menuScreen.mp3"));
 
     private Texture bg, birdTexture, forestTexture;
     private TextureAtlas sky, mainButtons;
@@ -37,10 +43,15 @@ public class MenuScreen extends BaseScreen {
     public void show() {
         super.show();
 
+        screenSound.loop(0.5f);
+        backMusic.play();
+        backMusic.setVolume(1);
+        backMusic.setLooping(true);
+
         sky = new TextureAtlas("textures/skyAtlas.pack");
         mainButtons = new TextureAtlas("textures/mainButtonAtlas.pack");
-        bg = new Texture("textures/skyBack.png");
-        forestTexture = new Texture("textures/forest.png");
+        bg = new Texture("textures/skyBackMenu.png");
+        forestTexture = new Texture("textures/forestMenu.png");
         birdTexture = new Texture("textures/airplane.png");
 
         background = new Background(bg);
@@ -50,7 +61,7 @@ public class MenuScreen extends BaseScreen {
         cloudy = new Cloudy[16];
         int num = 1;
         for (int i = 0; i < cloudy.length; i++) {
-            cloudy[i] = new Cloudy(sky, "cloudy" + num);
+            cloudy[i] = new Cloudy(sky, "cloudy" + num, -0.05f, -0.10f);
             if (num == 4) num = 1;
             else num++;
         }
@@ -86,17 +97,21 @@ public class MenuScreen extends BaseScreen {
     public void dispose() {
         super.dispose();
 
+        screenSound.stop();
+        screenSound.dispose();
         sky.dispose();
         mainButtons.dispose();
         bg.dispose();
         forestTexture.dispose();
         birdTexture.dispose();
+        backMusic.dispose();
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
         exitButton.touchDown(touch, pointer, button);
         startButton.touchDown(touch, pointer, button);
+        if (startButton.isMe(touch) || exitButton.isMe(touch)) clickSound.play();
         return false;
     }
 

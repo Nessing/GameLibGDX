@@ -12,9 +12,9 @@ public class Cloudy extends Sprite {
     private final Vector2 speed;
     private Rect worldBounds;
 
-    public Cloudy(TextureAtlas cloudy, String name) {
+    public Cloudy(TextureAtlas cloudy, String name, float speedFrom, float speedTo) {
         super(cloudy.findRegion(name));
-        speed = new Vector2(Rnd.nextFloat(-0.15f, -0.2f), 0);
+        speed = new Vector2(Rnd.nextFloat(speedFrom, speedTo), 0);
     }
 
     @Override

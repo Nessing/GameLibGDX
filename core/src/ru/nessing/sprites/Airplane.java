@@ -1,6 +1,8 @@
 package ru.nessing.sprites;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -12,9 +14,12 @@ import ru.nessing.pool.BulletPool;
 public class Airplane extends Sprite {
     private Rect worldBounds;
     private Vector2 direction;
-    private final float SPEED = 0.3f;
     private final float HEIGHT = 0.1f;
     private final int INVALID_POINTER = -1;
+    private final Sound userEngine = Gdx.audio.newSound(Gdx.files.internal("sounds/userEngine.wav"));
+    private final Sound userPullUp = Gdx.audio.newSound(Gdx.files.internal("sounds/pullUpAlarm.mp3"));
+    private final Sound userShot = Gdx.audio.newSound(Gdx.files.internal("sounds/shotRifle.wav"));
+    private final Sound userAlarm = Gdx.audio.newSound(Gdx.files.internal("sounds/alarm.mp3"));
 
     private final TextureRegion bulletRegion;
     private final BulletPool bulletPool;
@@ -22,10 +27,15 @@ public class Airplane extends Sprite {
     private final float bulletHeight;
     private final int damage;
 
+    private float SPEED;
     private Vector2 positionBullet = new Vector2();
     private int upPointer = INVALID_POINTER;
     private int downPointer = INVALID_POINTER;
 
+    private boolean isPullUp = false;
+    private boolean isTimer = false;
+    private int timerCounter = 0;
+    private boolean isPlayingSound;
     private boolean isPressedLeft;
     private boolean isPressedRight;
     private boolean isPressedDown;
@@ -40,6 +50,7 @@ public class Airplane extends Sprite {
         this.damage = 1;
         this.direction = new Vector2(0, 0);
         this.pos.set(-0.6f, 0);
+        SPEED = 0.3f;
     }
 
     @Override
@@ -155,18 +166,36 @@ public class Airplane extends Sprite {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
+        if (timerCounter >= 10) {
+            shoot();
+            timerCounter = 0;
+        } else {
+            timerCounter++;
+        }
         pos.mulAdd(direction, deltaTime);
         if (getLeft() <= worldBounds.getLeft()) {
             setLeft(worldBounds.getLeft());
         }
-        if (getRight() >= worldBounds.getRight() - 0.5f) {
-            setRight(worldBounds.getRight() - 0.5f);
+        if (getRight() >= worldBounds.getRight()) {
+            setRight(worldBounds.getRight());
         }
         if (getTop() >= worldBounds.getTop()) {
             setTop(worldBounds.getTop());
         }
+        if (getBottom() <= worldBounds.getBottom()) {
+            setBottom(worldBounds.getBottom());
+        }
         if (getBottom() <= worldBounds.getBottom() + 0.2f) {
-            setBottom(worldBounds.getBottom() + 0.2f);
+            isPullUp = true;
+        } else {
+            isPullUp = false;
+        }
+        if (isPullUp && !isPlayingSound) {
+            userPullUp.loop(0.83f);
+            isPlayingSound = true;
+        } else if (!isPullUp && isPlayingSound) {
+            userPullUp.stop();
+            isPlayingSound = false;
         }
     }
 
@@ -203,6 +232,21 @@ public class Airplane extends Sprite {
         Bullet bullet = bulletPool.obtain();
         positionBullet.set(this.pos.x + 0.15f, this.pos.y);
         bullet.set(this, bulletRegion, this.positionBullet, bulletSpeed, worldBounds, bulletHeight, damage);
+        userShot.play(0.1f);
     }
 
+    public void startSounds() {
+        userEngine.loop(0.25f);
+    }
+
+    public void stopSounds() {
+        userEngine.dispose();
+        userAlarm.dispose();
+        userShot.dispose();
+        userPullUp.dispose();
+    }
+
+    public void pressButtonStopMove() {
+        this.direction.set(0, 0);
+    }
 }
