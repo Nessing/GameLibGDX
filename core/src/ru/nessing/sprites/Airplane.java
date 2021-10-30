@@ -232,7 +232,7 @@ public class Airplane extends Sprite {
         Bullet bullet = bulletPool.obtain();
         positionBullet.set(this.pos.x + 0.15f, this.pos.y);
         bullet.set(this, bulletRegion, this.positionBullet, bulletSpeed, worldBounds, bulletHeight, damage);
-        userShot.play(0.2f);
+        userShot.play(0.1f);
     }
 
     public void startSounds() {
