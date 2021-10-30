@@ -33,8 +33,6 @@ public class Airplane extends Sprite {
     private int downPointer = INVALID_POINTER;
 
     private boolean isPullUp = false;
-    private boolean isTimer = false;
-    private int timerCounter = 0;
     private boolean isPlayingSound;
     private boolean isPressedLeft;
     private boolean isPressedRight;
@@ -166,12 +164,12 @@ public class Airplane extends Sprite {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        if (timerCounter >= 10) {
-            shoot();
-            timerCounter = 0;
-        } else {
-            timerCounter++;
-        }
+//        if (timerCounter >= 10) {
+//            shoot();
+//            timerCounter = 0;
+//        } else {
+//            timerCounter++;
+//        }
         pos.mulAdd(direction, deltaTime);
         if (getLeft() <= worldBounds.getLeft()) {
             setLeft(worldBounds.getLeft());
@@ -232,7 +230,7 @@ public class Airplane extends Sprite {
         Bullet bullet = bulletPool.obtain();
         positionBullet.set(this.pos.x + 0.15f, this.pos.y);
         bullet.set(this, bulletRegion, this.positionBullet, bulletSpeed, worldBounds, bulletHeight, damage);
-        userShot.play(0.1f);
+        userShot.play(0.4f);
     }
 
     public void startSounds() {
