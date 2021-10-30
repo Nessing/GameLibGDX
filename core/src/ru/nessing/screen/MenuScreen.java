@@ -10,11 +10,11 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.nessing.base.BaseScreen;
 import ru.nessing.math.Rect;
-import ru.nessing.sprites.Airplane;
 import ru.nessing.sprites.Background;
 import ru.nessing.sprites.Cloudy;
 import ru.nessing.sprites.ExitButton;
 import ru.nessing.sprites.ForestBack;
+import ru.nessing.sprites.LogoGame;
 import ru.nessing.sprites.StartButton;
 
 public class MenuScreen extends BaseScreen {
@@ -24,16 +24,19 @@ public class MenuScreen extends BaseScreen {
     private final Sound clickSound = Gdx.audio.newSound(Gdx.files.internal("sounds/click.wav"));
     private final Music backMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/Single intro for menuScreen.mp3"));
 
-    private Texture bg, birdTexture, forestTexture;
+    private Texture bg, airplaneTexture, forestTexture, hailfront;
     private TextureAtlas sky, mainButtons;
 
     private Background background;
     private ForestBack forestBack;
     private ForestBack forestBack2;
+    private LogoGame logoGame;
     private Cloudy cloudy[];
 
     private ExitButton exitButton;
     private StartButton startButton;
+
+    private int timeout = 0;
 
     public MenuScreen(Game game) {
         this.game = game;
@@ -52,11 +55,13 @@ public class MenuScreen extends BaseScreen {
         mainButtons = new TextureAtlas("textures/mainButtonAtlas.pack");
         bg = new Texture("textures/skyBackMenu.png");
         forestTexture = new Texture("textures/forestMenu.png");
-        birdTexture = new Texture("textures/airplane.png");
+        airplaneTexture = new Texture("textures/airplane.png");
+        hailfront = new Texture("textures/Hailfront.png");
 
         background = new Background(bg);
         forestBack = new ForestBack(forestTexture);
         forestBack2 = new ForestBack(forestTexture);
+        logoGame = new LogoGame(hailfront);
 
         cloudy = new Cloudy[16];
         int num = 1;
@@ -89,6 +94,7 @@ public class MenuScreen extends BaseScreen {
         }
         forestBack.resize(worldBounds, false);
         forestBack2.resize(worldBounds, true);
+        logoGame.resize(worldBounds);
         exitButton.resize(worldBounds);
         startButton.resize(worldBounds);
     }
@@ -103,7 +109,8 @@ public class MenuScreen extends BaseScreen {
         mainButtons.dispose();
         bg.dispose();
         forestTexture.dispose();
-        birdTexture.dispose();
+        hailfront.dispose();
+        airplaneTexture.dispose();
         backMusic.dispose();
     }
 
@@ -136,6 +143,11 @@ public class MenuScreen extends BaseScreen {
         }
         forestBack.draw(batch);
         forestBack2.draw(batch);
+        if (timeout == 1130) {
+            logoGame.draw(batch);
+        } else {
+            timeout++;
+        }
         exitButton.draw(batch);
         startButton.draw(batch);
         batch.end();
