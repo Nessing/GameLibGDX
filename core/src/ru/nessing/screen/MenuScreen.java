@@ -24,6 +24,8 @@ public class MenuScreen extends BaseScreen {
     private final Sound clickSound = Gdx.audio.newSound(Gdx.files.internal("sounds/click.wav"));
     private final Music backMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/Single intro for menuScreen.mp3"));
 
+    private boolean isLogo = false;
+
     private Texture bg, airplaneTexture, forestTexture, hailfront;
     private TextureAtlas sky, mainButtons;
 
@@ -143,10 +145,15 @@ public class MenuScreen extends BaseScreen {
         }
         forestBack.draw(batch);
         forestBack2.draw(batch);
-        if (timeout == 1130) {
-            logoGame.draw(batch);
+        if (!isLogo) {
+            if (timeout == 1150) {
+                isLogo = true;
+            } else {
+                timeout++;
+            }
         } else {
-            timeout++;
+            timeout = 0;
+            logoGame.draw(batch);
         }
         exitButton.draw(batch);
         startButton.draw(batch);
