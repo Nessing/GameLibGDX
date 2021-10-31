@@ -48,7 +48,7 @@ public class MenuScreen extends BaseScreen {
     public void show() {
         super.show();
 
-        screenSound.loop(0.5f);
+        screenSound.loop();
         backMusic.play();
         backMusic.setVolume(1);
         backMusic.setLooping(true);

@@ -236,7 +236,7 @@ public class Airplane extends Sprite {
     }
 
     public void startSounds() {
-        userEngine.loop(0.25f);
+        userEngine.loop(0.35f);
     }
 
     public void stopSounds() {
