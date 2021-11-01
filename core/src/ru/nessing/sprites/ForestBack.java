@@ -18,7 +18,7 @@ public class ForestBack extends Sprite {
     }
 
     public void resize(Rect worldBounds, boolean second) {
-        setHeightProportion(worldBounds.getHeight() + worldBounds.getHalfHeight() / 2 + 0.2f);
+        setHeightProportion(worldBounds.getHeight() + worldBounds.getHalfHeight() / 2 + 0.1f);
         this.worldBounds = worldBounds;
         if (second) {
             pos.set(getWidth(), worldBounds.pos.y);
