@@ -146,7 +146,7 @@ public class MenuScreen extends BaseScreen {
         forestBack.draw(batch);
         forestBack2.draw(batch);
         if (!isLogo) {
-            if (timeout == 1150) {
+            if (timeout == 1130) {
                 isLogo = true;
             } else {
                 timeout++;
