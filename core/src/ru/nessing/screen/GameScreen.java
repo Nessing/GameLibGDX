@@ -11,31 +11,40 @@ import com.badlogic.gdx.math.Vector2;
 import ru.nessing.base.BaseScreen;
 import ru.nessing.math.Rect;
 import ru.nessing.pool.BulletPool;
+import ru.nessing.pool.EnemyPool;
 import ru.nessing.sprites.Airplane;
 import ru.nessing.sprites.BackButton;
 import ru.nessing.sprites.Background;
 import ru.nessing.sprites.Cloudy;
+import ru.nessing.sprites.EnemyAirplane;
 import ru.nessing.sprites.ForestBack;
+import ru.nessing.util.EnemyEmitter;
 
 public class GameScreen extends BaseScreen {
 
     private final Game game;
 
     private Texture bg, forestTexture;
-    private TextureAtlas sky, mainButtons, airplaneAtlas;
+    private TextureAtlas sky, mainButtons, airplaneAtlas, enemyAirplaneAtlas;
 
     private final Sound clickSound = Gdx.audio.newSound(Gdx.files.internal("sounds/click.wav"));
     private final Music backMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/Single for gameScreen.mp3"));
+    private final Sound soundShootEnemy = Gdx.audio.newSound(Gdx.files.internal("sounds/shotRifle.wav"));
 
     private Background background;
     private ForestBack forestBack;
     private ForestBack forestBack2;
     private Cloudy cloudy[];
+
     private Airplane airplane;
+    private EnemyAirplane enemyAirplane;
 
     private BulletPool bulletPool;
+    private EnemyPool enemyPool;
 
     private BackButton backButton;
+
+    private EnemyEmitter enemyEmitter;
 
     public GameScreen(Game game) {
         this.game = game;
@@ -53,14 +62,19 @@ public class GameScreen extends BaseScreen {
         mainButtons = new TextureAtlas("textures/mainButtonAtlas.pack");
         forestTexture = new Texture("textures/forest.png");
         airplaneAtlas = new TextureAtlas("textures/userAirplaneAtlas.pack");
+        enemyAirplaneAtlas = new TextureAtlas("textures/enemiesAtlas.pack");
 
         background = new Background(bg);
         forestBack = new ForestBack(forestTexture);
         forestBack2 = new ForestBack(forestTexture);
 
         bulletPool = new BulletPool();
+        enemyPool = new EnemyPool(bulletPool, worldBounds, soundShootEnemy);
 
         airplane = new Airplane(airplaneAtlas, "airplaneUser", bulletPool);
+
+        enemyEmitter = new EnemyEmitter(enemyPool, worldBounds, enemyAirplaneAtlas);
+
         airplane.startSounds();
 
         cloudy = new Cloudy[16];
@@ -103,10 +117,13 @@ public class GameScreen extends BaseScreen {
         bg.dispose();
         forestTexture.dispose();
         airplaneAtlas.dispose();
+        enemyAirplaneAtlas.dispose();
         mainButtons.dispose();
         bulletPool.dispose();
+        enemyPool.dispose();
         airplane.stopSounds();
         backMusic.dispose();
+        soundShootEnemy.dispose();
     }
 
     @Override
@@ -144,13 +161,16 @@ public class GameScreen extends BaseScreen {
             cloudy.update(deltaTime);
         }
         bulletPool.updateActiveObjects(deltaTime);
+        enemyPool.updateActiveObjects(deltaTime);
         airplane.update(deltaTime);
+        enemyEmitter.generate(deltaTime);
         forestBack.update(deltaTime);
         forestBack2.update(deltaTime);
     }
 
     private void freeAllDestroyed() {
         bulletPool.freeAllDestroyed();
+        enemyPool.freeAllDestroyed();
     }
 
     private void draw() {
@@ -162,6 +182,7 @@ public class GameScreen extends BaseScreen {
         forestBack.draw(batch);
         forestBack2.draw(batch);
         bulletPool.drawActiveObjects(batch);
+        enemyPool.drawActiveObjects(batch);
         airplane.draw(batch);
         backButton.draw(batch);
         batch.end();

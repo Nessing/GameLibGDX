@@ -4,37 +4,36 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-import ru.nessing.base.Sprite;
+import ru.nessing.base.Ship;
 import ru.nessing.math.Rect;
 import ru.nessing.pool.BulletPool;
 
-public class Airplane extends Sprite {
-    private Rect worldBounds;
-    private Vector2 direction;
+public class Airplane extends Ship {
+//    private Rect worldBounds;
+//    private Vector2 direction;
+
+//    private final float RELOAD_INTERVAL = 0.2f;
     private final float HEIGHT = 0.1f;
     private final int INVALID_POINTER = -1;
     private final Sound userEngine = Gdx.audio.newSound(Gdx.files.internal("sounds/userEngine.wav"));
     private final Sound userPullUp = Gdx.audio.newSound(Gdx.files.internal("sounds/pullUpAlarm.mp3"));
-    private final Sound userShot = Gdx.audio.newSound(Gdx.files.internal("sounds/shotRifle.wav"));
+//    private final Sound soundShoot = Gdx.audio.newSound(Gdx.files.internal("sounds/shotRifle.wav"));
     private final Sound userAlarm = Gdx.audio.newSound(Gdx.files.internal("sounds/alarm.mp3"));
 
-    private final TextureRegion bulletRegion;
-    private final BulletPool bulletPool;
-    private final Vector2 bulletSpeed;
-    private final float bulletHeight;
-    private final int damage;
+//    private final TextureRegion bulletRegion;
+//    private final BulletPool bulletPool;
+//    private final Vector2 bulletSpeed;
+//    private final float bulletHeight;
 
-    private float SPEED;
-    private Vector2 positionBullet = new Vector2();
+//    private float SPEED;
+//    private Vector2 positionBullet;
     private int upPointer = INVALID_POINTER;
     private int downPointer = INVALID_POINTER;
 
     private boolean isPullUp = false;
-    private boolean isTimer = false;
-    private int timerCounter = 0;
+//    private float reloadTimer;
     private boolean isPlayingSound;
     private boolean isPressedLeft;
     private boolean isPressedRight;
@@ -43,14 +42,18 @@ public class Airplane extends Sprite {
 
     public Airplane(TextureAtlas textureAtlas, String name, BulletPool bulletPool) {
         super(textureAtlas.findRegion(name), 2, 1, 2);
+        this.reloadInterval = 0.2f;
+        this.soundShoot = Gdx.audio.newSound(Gdx.files.internal("sounds/shotRifle.wav"));
+        this.positionBullet = new Vector2();
         this.bulletPool = bulletPool;
         this.bulletRegion = textureAtlas.findRegion("bullet");
         this.bulletSpeed = new Vector2(1f, 0);
         this.bulletHeight = 0.01f;
         this.damage = 1;
-        this.direction = new Vector2(0, 0);
+        this.hp = 100;
+        this.direction = new Vector2();
         this.pos.set(-0.6f, 0);
-        SPEED = 0.3f;
+        speed = 0.3f;
     }
 
     @Override
@@ -64,29 +67,29 @@ public class Airplane extends Sprite {
     @Override
     public boolean keyDown(int button) {
         switch (button) {
-            case Input.Keys.W :
-            case Input.Keys.UP :
+            case Input.Keys.W:
+            case Input.Keys.UP:
                 isPressedUp = true;
                 moveUp();
                 break;
-            case Input.Keys.S :
-            case Input.Keys.DOWN :
+            case Input.Keys.S:
+            case Input.Keys.DOWN:
                 isPressedDown = true;
                 moveDown();
                 break;
-            case Input.Keys.A :
-            case Input.Keys.LEFT :
+            case Input.Keys.A:
+            case Input.Keys.LEFT:
                 isPressedLeft = true;
                 moveLeft();
                 break;
-            case Input.Keys.D :
-            case Input.Keys.RIGHT :
+            case Input.Keys.D:
+            case Input.Keys.RIGHT:
                 isPressedRight = true;
                 moveRight();
                 break;
-            case Input.Keys.NUMPAD_0 :
-                shoot();
-                break;
+//            case Input.Keys.NUMPAD_0:
+//                shoot();
+//                break;
         }
         if (isPressedUp && isPressedRight) moveUpAndRight();
         if (isPressedUp && isPressedLeft) moveUpAndLeft();
@@ -98,32 +101,32 @@ public class Airplane extends Sprite {
     @Override
     public boolean keyUp(int button) {
         switch (button) {
-            case Input.Keys.W :
-            case Input.Keys.UP :
+            case Input.Keys.W:
+            case Input.Keys.UP:
                 isPressedUp = false;
                 if (isPressedDown) moveDown();
                 else if (isPressedRight) moveRight();
                 else if (isPressedLeft) moveLeft();
                 else moveStop();
                 break;
-            case Input.Keys.S :
-            case Input.Keys.DOWN :
+            case Input.Keys.S:
+            case Input.Keys.DOWN:
                 isPressedDown = false;
                 if (isPressedUp) moveUp();
                 else if (isPressedRight) moveRight();
                 else if (isPressedLeft) moveLeft();
                 else moveStop();
                 break;
-            case Input.Keys.A :
-            case Input.Keys.LEFT :
+            case Input.Keys.A:
+            case Input.Keys.LEFT:
                 isPressedLeft = false;
                 if (isPressedRight) moveRight();
                 else if (isPressedUp) moveUp();
                 else if (isPressedDown) moveDown();
                 else moveStop();
                 break;
-            case Input.Keys.D :
-            case Input.Keys.RIGHT :
+            case Input.Keys.D:
+            case Input.Keys.RIGHT:
                 isPressedRight = false;
                 if (isPressedLeft) moveLeft();
                 else if (isPressedUp) moveUp();
@@ -166,13 +169,13 @@ public class Airplane extends Sprite {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        if (timerCounter >= 10) {
-            shoot();
-            timerCounter = 0;
-        } else {
-            timerCounter++;
-        }
-        pos.mulAdd(direction, deltaTime);
+        positionBullet.set(pos.x + 0.2f, pos.y);
+//        reloadTimer += deltaTime;
+//        if (reloadTimer >= RELOAD_INTERVAL) {
+//            reloadTimer = 0;
+//            shoot();
+//        }
+//        pos.mulAdd(direction, deltaTime);
         if (getLeft() <= worldBounds.getLeft()) {
             setLeft(worldBounds.getLeft());
         }
@@ -200,40 +203,47 @@ public class Airplane extends Sprite {
     }
 
     private void moveUp() {
-        direction.set(0, SPEED);
+        direction.set(0, speed);
     }
+
     private void moveDown() {
-        direction.set(0, -SPEED);
+        direction.set(0, -speed);
     }
+
     private void moveRight() {
-        direction.set(SPEED, 0);
+        direction.set(speed, 0);
     }
+
     private void moveLeft() {
-        direction.set(-SPEED, 0);
+        direction.set(-speed, 0);
     }
+
     private void moveUpAndRight() {
-        direction.set(SPEED, SPEED);
+        direction.set(speed, speed);
     }
+
     private void moveUpAndLeft() {
-        direction.set(-SPEED, SPEED);
+        direction.set(-speed, speed);
     }
+
     private void moveDownAndRight() {
-        direction.set(SPEED, -SPEED);
+        direction.set(speed, -speed);
     }
+
     private void moveDownAndLeft() {
-        direction.set(-SPEED, -SPEED);
+        direction.set(-speed, -speed);
     }
 
     private void moveStop() {
         direction.set(0, 0);
     }
 
-    private void shoot() {
-        Bullet bullet = bulletPool.obtain();
-        positionBullet.set(this.pos.x + 0.15f, this.pos.y);
-        bullet.set(this, bulletRegion, this.positionBullet, bulletSpeed, worldBounds, bulletHeight, damage);
-        userShot.play(0.1f);
-    }
+//    private void shoot() {
+//        Bullet bullet = bulletPool.obtain();
+//        positionBullet.set(this.pos.x + 0.2f, this.pos.y);
+//        bullet.set(this, bulletRegion, this.positionBullet, bulletSpeed, worldBounds, bulletHeight, damage);
+//        userShot.play(0.1f);
+//    }
 
     public void startSounds() {
         userEngine.loop(0.35f);
@@ -242,7 +252,7 @@ public class Airplane extends Sprite {
     public void stopSounds() {
         userEngine.dispose();
         userAlarm.dispose();
-        userShot.dispose();
+        soundShoot.dispose();
         userPullUp.dispose();
     }
 
