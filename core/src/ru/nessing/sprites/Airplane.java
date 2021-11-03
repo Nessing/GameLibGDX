@@ -11,29 +11,18 @@ import ru.nessing.math.Rect;
 import ru.nessing.pool.BulletPool;
 
 public class Airplane extends Ship {
-//    private Rect worldBounds;
-//    private Vector2 direction;
 
-//    private final float RELOAD_INTERVAL = 0.2f;
     private final float HEIGHT = 0.1f;
     private final int INVALID_POINTER = -1;
     private final Sound userEngine = Gdx.audio.newSound(Gdx.files.internal("sounds/userEngine.wav"));
     private final Sound userPullUp = Gdx.audio.newSound(Gdx.files.internal("sounds/pullUpAlarm.mp3"));
-//    private final Sound soundShoot = Gdx.audio.newSound(Gdx.files.internal("sounds/shotRifle.wav"));
+    //    private final Sound soundShoot = Gdx.audio.newSound(Gdx.files.internal("sounds/shotRifle.wav"));
     private final Sound userAlarm = Gdx.audio.newSound(Gdx.files.internal("sounds/alarm.mp3"));
 
-//    private final TextureRegion bulletRegion;
-//    private final BulletPool bulletPool;
-//    private final Vector2 bulletSpeed;
-//    private final float bulletHeight;
-
-//    private float SPEED;
-//    private Vector2 positionBullet;
     private int upPointer = INVALID_POINTER;
     private int downPointer = INVALID_POINTER;
 
     private boolean isPullUp = false;
-//    private float reloadTimer;
     private boolean isPlayingSound;
     private boolean isPressedLeft;
     private boolean isPressedRight;
@@ -170,12 +159,6 @@ public class Airplane extends Ship {
     public void update(float deltaTime) {
         super.update(deltaTime);
         positionBullet.set(pos.x + 0.2f, pos.y);
-//        reloadTimer += deltaTime;
-//        if (reloadTimer >= RELOAD_INTERVAL) {
-//            reloadTimer = 0;
-//            shoot();
-//        }
-//        pos.mulAdd(direction, deltaTime);
         if (getLeft() <= worldBounds.getLeft()) {
             setLeft(worldBounds.getLeft());
         }
@@ -237,13 +220,6 @@ public class Airplane extends Ship {
     private void moveStop() {
         direction.set(0, 0);
     }
-
-//    private void shoot() {
-//        Bullet bullet = bulletPool.obtain();
-//        positionBullet.set(this.pos.x + 0.2f, this.pos.y);
-//        bullet.set(this, bulletRegion, this.positionBullet, bulletSpeed, worldBounds, bulletHeight, damage);
-//        userShot.play(0.1f);
-//    }
 
     public void startSounds() {
         userEngine.loop(0.35f);
