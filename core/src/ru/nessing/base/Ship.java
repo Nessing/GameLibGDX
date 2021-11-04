@@ -16,6 +16,7 @@ public class Ship extends Sprite {
     protected int hp;
 
     protected Sound soundShoot;
+    protected float volumeShoot;
 
     protected TextureRegion bulletRegion;
     protected BulletPool bulletPool;
@@ -49,6 +50,6 @@ public class Ship extends Sprite {
     private void shoot() {
         Bullet bullet = bulletPool.obtain();
         bullet.set(this, bulletRegion, positionBullet, bulletSpeed, worldBounds, bulletHeight, damage);
-        soundShoot.play(0.1f);
+        soundShoot.play(volumeShoot);
     }
 }
