@@ -46,7 +46,7 @@ public class EnemyAirplane extends Ship {
         if (getBottom() <= worldBounds.getBottom() + 0.2f) direction.y = Rnd.nextFloat(0.1f, 0.1f);
         else if (getTop() >= worldBounds.getTop()) direction.y = Rnd.nextFloat(-0.1f, -0.1f);
 
-        if (getLeft() < worldBounds.getLeft()) {
+        if (getLeft() < worldBounds.getLeft() - getWidth()) {
             checkDirectY = false;
             destroy();
         }
