@@ -1,0 +1,19 @@
+
+enemyAirplaneAtlas.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+airplaneEnemy
+  rotate: false
+  xy: 1, 1
+  size: 592, 464
+  orig: 592, 464
+  offset: 0, 0
+  index: -1
+enemyBullet
+  rotate: false
+  xy: 595, 205
+  size: 408, 260
+  orig: 408, 260
+  offset: 0, 0
+  index: 3

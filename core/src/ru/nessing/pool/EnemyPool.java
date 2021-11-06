@@ -8,17 +8,19 @@ import ru.nessing.sprites.EnemyAirplane;
 
 public class EnemyPool extends SpritesPool<EnemyAirplane> {
     private final BulletPool bulletPool;
+    private final ExplosionPool explosionPool;
     private final Rect worldBounds;
     private final Sound soundShoot;
 
-    public EnemyPool(BulletPool bulletPool, Rect worldBounds, Sound soundShoot) {
+    public EnemyPool(BulletPool bulletPool, ExplosionPool explosionPool, Rect worldBounds, Sound soundShoot) {
         this.bulletPool = bulletPool;
+        this.explosionPool = explosionPool;
         this.worldBounds = worldBounds;
         this.soundShoot = soundShoot;
     }
 
     @Override
     protected EnemyAirplane newObject() {
-        return new EnemyAirplane(bulletPool, worldBounds, soundShoot);
+        return new EnemyAirplane(bulletPool, explosionPool, worldBounds, soundShoot);
     }
 }

@@ -1,0 +1,19 @@
+
+blastAtlas.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+blast_ground
+  rotate: false
+  xy: 1, 1
+  size: 1280, 748
+  orig: 1280, 748
+  offset: 0, 0
+  index: -1
+blast_air
+  rotate: false
+  xy: 1283, 173
+  size: 601, 576
+  orig: 601, 576
+  offset: 0, 0
+  index: -1
