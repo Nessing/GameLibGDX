@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.List;
+
 import ru.nessing.base.BaseScreen;
 import ru.nessing.math.Rect;
 import ru.nessing.pool.BulletPool;
@@ -91,6 +93,7 @@ public class GameScreen extends BaseScreen {
     public void render(float deltaTime) {
         super.render(deltaTime);
         update(deltaTime);
+        checkCollision();
         freeAllDestroyed();
         draw();
     }
@@ -166,6 +169,16 @@ public class GameScreen extends BaseScreen {
         enemyEmitter.generate(deltaTime);
         forestBack.update(deltaTime);
         forestBack2.update(deltaTime);
+    }
+
+    private void checkCollision() {
+        List<EnemyAirplane> enemyAirplanes = enemyPool.getActiveObjects();
+        for (EnemyAirplane enemy : enemyAirplanes) {
+            if (!enemy.isDestroyed() && !airplane.isOutside(enemy)) {
+                enemy.setCheckDirectY(false);
+                enemy.destroy();
+            }
+        }
     }
 
     private void freeAllDestroyed() {

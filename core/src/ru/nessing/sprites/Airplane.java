@@ -42,7 +42,8 @@ public class Airplane extends Ship {
         this.hp = 100;
         this.direction = new Vector2();
         this.pos.set(-0.6f, 0);
-        speed = 0.3f;
+        this.speed = 0.3f;
+        this.volumeShoot = 0.1f;
     }
 
     @Override
