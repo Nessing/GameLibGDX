@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import ru.nessing.base.Ship;
 import ru.nessing.math.Rect;
 import ru.nessing.pool.BulletPool;
+import ru.nessing.pool.ExplosionPool;
 
 public class Airplane extends Ship {
 
@@ -23,15 +24,18 @@ public class Airplane extends Ship {
     private int downPointer = INVALID_POINTER;
 
     private boolean isPullUp = false;
+    private boolean isLowHealth = false;
+    private boolean isPlayingAlarm;
     private boolean isPlayingSound;
     private boolean isPressedLeft;
     private boolean isPressedRight;
     private boolean isPressedDown;
     private boolean isPressedUp;
 
-    public Airplane(TextureAtlas textureAtlas, String name, BulletPool bulletPool) {
+    public Airplane(TextureAtlas textureAtlas, String name, BulletPool bulletPool, ExplosionPool explosionPool) {
         super(textureAtlas.findRegion(name), 2, 1, 2);
-        this.reloadInterval = 0.2f;
+        this.reloadInterval = 0.4f;
+        this.explosionPool = explosionPool;
         this.soundShoot = Gdx.audio.newSound(Gdx.files.internal("sounds/shotRifle.wav"));
         this.positionBullet = new Vector2();
         this.bulletPool = bulletPool;
@@ -39,7 +43,7 @@ public class Airplane extends Ship {
         this.bulletSpeed = new Vector2(1f, 0);
         this.bulletHeight = 0.01f;
         this.damage = 1;
-        this.hp = 100;
+        this.hp = 20;
         this.direction = new Vector2();
         this.pos.set(-0.6f, 0);
         this.speed = 0.3f;
@@ -172,17 +176,38 @@ public class Airplane extends Ship {
         if (getBottom() <= worldBounds.getBottom()) {
             setBottom(worldBounds.getBottom());
         }
+
         if (getBottom() <= worldBounds.getBottom() + 0.2f) {
             isPullUp = true;
         } else {
             isPullUp = false;
         }
+
         if (isPullUp && !isPlayingSound) {
             userPullUp.loop(0.83f);
             isPlayingSound = true;
         } else if (!isPullUp && isPlayingSound) {
             userPullUp.stop();
             isPlayingSound = false;
+        }
+        if (getBottom() <= worldBounds.getBottom()) {
+            damage(1);
+        }
+        if (hp <= 4) {
+            isLowHealth = true;
+        } else {
+            isLowHealth = false;
+        }
+        if (isLowHealth && !isPlayingAlarm) {
+            userAlarm.loop(0.12f);
+            isPlayingAlarm = true;
+        } else if (!isLowHealth && isPlayingAlarm) {
+            userAlarm.stop();
+            isPlayingAlarm = false;
+        }
+        if (this.isDestroyed()) {
+            userPullUp.stop();
+            userAlarm.stop();
         }
     }
 
