@@ -284,7 +284,6 @@ public class GameScreen extends BaseScreen {
                     enemy.setCheckDirectY(false);
                     bullet.destroy();
                 }
-                enemy.destroy();
             }
         }
     }
