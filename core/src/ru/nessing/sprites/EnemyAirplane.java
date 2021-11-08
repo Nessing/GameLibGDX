@@ -21,6 +21,7 @@ public class EnemyAirplane extends Ship {
         this.checkDirectY = checkDirectY;
     }
 
+
     public EnemyAirplane(BulletPool bulletPool, ExplosionPool explosionPool, Rect worldBounds, Sound soundShoot) {
         this.bulletPool = bulletPool;
         this.explosionPool = explosionPool;
