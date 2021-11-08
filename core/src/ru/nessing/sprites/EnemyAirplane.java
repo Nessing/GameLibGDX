@@ -9,6 +9,7 @@ import ru.nessing.base.Ship;
 import ru.nessing.math.Rect;
 import ru.nessing.math.Rnd;
 import ru.nessing.pool.BulletPool;
+import ru.nessing.pool.ExplosionPool;
 
 public class EnemyAirplane extends Ship {
 
@@ -20,8 +21,10 @@ public class EnemyAirplane extends Ship {
         this.checkDirectY = checkDirectY;
     }
 
-    public EnemyAirplane(BulletPool bulletPool, Rect worldBounds, Sound soundShoot) {
+
+    public EnemyAirplane(BulletPool bulletPool, ExplosionPool explosionPool, Rect worldBounds, Sound soundShoot) {
         this.bulletPool = bulletPool;
+        this.explosionPool = explosionPool;
         this.worldBounds = worldBounds;
         this.soundShoot = soundShoot;
         bulletSpeed = new Vector2();
@@ -73,5 +76,12 @@ public class EnemyAirplane extends Ship {
         this.reloadInterval = reloadInterval;
         setHeightProportion(height);
         this.direction.set(-0.5f, 0);
+    }
+
+    public boolean isBulletCollision(Bullet bullet) {
+        return !(bullet.getRight() < pos.x
+                || bullet.getLeft() > getRight()
+                || bullet.getBottom() > getTop()
+                || bullet.getTop() < getBottom());
     }
 }

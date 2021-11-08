@@ -3,6 +3,7 @@ package ru.nessing.base;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Matrix4;
@@ -37,7 +38,7 @@ public class BaseScreen implements Screen, InputProcessor {
 
     @Override
     public void render(float v) {
-        ScreenUtils.clear(0.43f, 0.11f, 0.91f, 0);
+        ScreenUtils.clear(0, 0, 0, 0);
     }
 
     @Override

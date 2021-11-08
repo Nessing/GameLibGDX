@@ -17,7 +17,7 @@ public class EnemyEmitter {
     private static final float ENEMY_SMALL_BULLET_HEIGHT = 0.01f;
     private static final int ENEMY_SMALL_BULLET_DAMAGE = 1;
     private static final float ENEMY_SMALL_RELOAD_INTERVAL = Rnd.nextFloat(2.5f, 4f);
-    private static final int ENEMY_SMALL_HP = 1;
+    private static final int ENEMY_SMALL_HP = 3;
 
     private final Rect worldBounds;
     private final EnemyPool enemyPool;
@@ -33,7 +33,7 @@ public class EnemyEmitter {
         this.enemyPool = enemyPool;
         this.worldBounds = worldBounds;
         bulletRegion = atlas.findRegion("enemyBullet");
-        enemySmallRegions = Regions.split(atlas.findRegion("enemyAirplane"), 1, 1, 1);
+        enemySmallRegions = Regions.split(atlas.findRegion("airplaneEnemy"), 2, 1, 2);
     }
 
     private float generateTimer;
