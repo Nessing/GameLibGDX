@@ -25,12 +25,17 @@ public class Airplane extends Ship {
 
     private boolean isPullUp = false;
     private boolean isLowHealth = false;
+    private boolean isDestroy = false;
     private boolean isPlayingAlarm;
     private boolean isPlayingSound;
     private boolean isPressedLeft;
     private boolean isPressedRight;
     private boolean isPressedDown;
     private boolean isPressedUp;
+
+    public void setDestroy(boolean destroy) {
+        isDestroy = destroy;
+    }
 
     public Airplane(TextureAtlas textureAtlas, String name, BulletPool bulletPool, ExplosionPool explosionPool) {
         super(textureAtlas.findRegion(name), 2, 1, 2);
@@ -183,31 +188,32 @@ public class Airplane extends Ship {
             isPullUp = false;
         }
 
-        if (isPullUp && !isPlayingSound) {
-            userPullUp.loop(0.83f);
-            isPlayingSound = true;
-        } else if (!isPullUp && isPlayingSound) {
-            userPullUp.stop();
-            isPlayingSound = false;
-        }
-        if (getBottom() <= worldBounds.getBottom()) {
-            damage(1);
-        }
-        if (hp <= 4) {
-            isLowHealth = true;
+        if (!isDestroy) {
+            if (isPullUp && !isPlayingSound) {
+                userPullUp.loop(0.83f);
+                isPlayingSound = true;
+            } else if (!isPullUp && isPlayingSound) {
+                userPullUp.stop();
+                isPlayingSound = false;
+            }
+            if (getBottom() <= worldBounds.getBottom()) {
+                damage(1);
+            }
+            if (hp <= 4) {
+                isLowHealth = true;
+            } else {
+                isLowHealth = false;
+            }
+            if (isLowHealth && !isPlayingAlarm) {
+                userAlarm.loop(0.12f);
+                isPlayingAlarm = true;
+            } else if (!isLowHealth && isPlayingAlarm) {
+                userAlarm.stop();
+                isPlayingAlarm = false;
+            }
         } else {
-            isLowHealth = false;
-        }
-        if (isLowHealth && !isPlayingAlarm) {
-            userAlarm.loop(0.12f);
-            isPlayingAlarm = true;
-        } else if (!isLowHealth && isPlayingAlarm) {
             userAlarm.stop();
-            isPlayingAlarm = false;
-        }
-        if (this.isDestroyed()) {
             userPullUp.stop();
-            userAlarm.stop();
         }
     }
 

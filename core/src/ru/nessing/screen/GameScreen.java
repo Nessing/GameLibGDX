@@ -38,11 +38,11 @@ public class GameScreen extends BaseScreen {
 
     private final Sound clickSound = Gdx.audio.newSound(Gdx.files.internal("sounds/click.wav"));
     private final Music backMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/Single for gameScreen.mp3"));
-    private final Sound gameOverMusic = Gdx.audio.newSound(Gdx.files.internal("sounds/Single outro for endGame.mp3"));
+    private final Music gameOverMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/Single outro for endGame.mp3"));
     private final Sound soundShootEnemy = Gdx.audio.newSound(Gdx.files.internal("sounds/shotRifle.wav"));
     private final Sound explosionEnemy = Gdx.audio.newSound(Gdx.files.internal("sounds/enemyExplosion.wav"));
 
-    private boolean playGameOverTrack = false;
+    private boolean playGameOverTrack = true;
     private float timerGameOverBack = 0;
 
     private Background background;
@@ -80,8 +80,12 @@ public class GameScreen extends BaseScreen {
     public void show() {
         super.show();
 
-        backMusic.play();
+        gameOverMusic.setVolume(1);
+        gameOverMusic.setLooping(false);
+
+        backMusic.setVolume(1);
         backMusic.setLooping(true);
+        backMusic.play();
 
         sky = new TextureAtlas("textures/skyAtlas.pack");
         bg = new Texture("textures/skyBack.png");
@@ -226,8 +230,8 @@ public class GameScreen extends BaseScreen {
         for (Cloudy cloudy : cloudy) {
             cloudy.update(deltaTime);
         }
+        airplane.update(deltaTime);
         if (!airplane.isDestroyed()) {
-            airplane.update(deltaTime);
             bulletPool.updateActiveObjects(deltaTime);
             enemyPool.updateActiveObjects(deltaTime);
             enemyEmitter.generate(deltaTime);
@@ -243,10 +247,11 @@ public class GameScreen extends BaseScreen {
             }
         }
         if (airplane.isDestroyed()) {
+            airplane.setDestroy(true);
             backMusic.stop();
-            if (!playGameOverTrack) {
+            if (playGameOverTrack) {
                 gameOverMusic.play();
-                playGameOverTrack = true;
+                playGameOverTrack = false;
             }
             airplane.stopSounds();
         }
@@ -323,6 +328,7 @@ public class GameScreen extends BaseScreen {
         explosionPool.drawActiveObjects(batch);
         backButton.draw(batch);
         if (airplane.isDestroyed()) {
+            airplane.setDestroy(true);
             if (timerGameOverBack <= 1f) {
                 batch.setColor(1, 1, 1, 1 - timerGameOverBack);
                 forestBack.draw(batch);
