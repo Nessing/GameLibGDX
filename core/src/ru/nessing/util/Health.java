@@ -21,7 +21,7 @@ public class Health extends Sprite {
     }
 
     public Health(TextureAtlas atlas, String name) {
-        super(atlas.findRegion(name), 1, 4, 4);
+        super(atlas.findRegion(name), 1, 4, 5);
     }
 
     @Override

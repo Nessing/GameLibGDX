@@ -11,10 +11,13 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.List;
 
 import ru.nessing.base.BaseScreen;
+import ru.nessing.base.Font;
 import ru.nessing.math.Rect;
+import ru.nessing.math.Rnd;
 import ru.nessing.pool.BulletPool;
 import ru.nessing.pool.EnemyPool;
 import ru.nessing.pool.ExplosionPool;
+import ru.nessing.pool.HealthPool;
 import ru.nessing.sprites.Airplane;
 import ru.nessing.sprites.BackButton;
 import ru.nessing.sprites.Background;
@@ -23,27 +26,56 @@ import ru.nessing.sprites.Cloudy;
 import ru.nessing.sprites.EnemyAirplane;
 import ru.nessing.sprites.ExitButton;
 import ru.nessing.sprites.ForestBack;
+import ru.nessing.sprites.HealthUp;
 import ru.nessing.sprites.LogoGame;
 import ru.nessing.sprites.RestartButton;
 import ru.nessing.sprites.StartButton;
 import ru.nessing.util.EnemyEmitter;
 import ru.nessing.util.Health;
+import ru.nessing.util.HealthEmitter;
 
 public class GameScreen extends BaseScreen {
+
+    private static final String FRAGS = "Frags: ";
+    private static final String LEVEL = "LEVEL: ";
+    private static final float FONT_SIZE = 0.04f;
 
     private final Game game;
 
     private Texture bg, forestTexture, bgEnd, gameOverLogo;
-    private TextureAtlas sky, mainButtons, airplaneAtlas, enemyAirplaneAtlas, explosionAir, healthUser;
+    private TextureAtlas sky, mainButtons, airplaneAtlas, enemyAirplaneAtlas, explosionAir, healthUser, healthAtlas;
 
     private final Sound clickSound = Gdx.audio.newSound(Gdx.files.internal("sounds/click.wav"));
     private final Music backMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/Single for gameScreen.mp3"));
     private final Music gameOverMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/Single outro for endGame.mp3"));
     private final Sound soundShootEnemy = Gdx.audio.newSound(Gdx.files.internal("sounds/shotRifle.wav"));
+    private final Sound soundUpHP = Gdx.audio.newSound(Gdx.files.internal("sounds/takeUpHp.wav"));
     private final Sound explosionEnemy = Gdx.audio.newSound(Gdx.files.internal("sounds/enemyExplosion.wav"));
+    private final Sound explosionUser = Gdx.audio.newSound(Gdx.files.internal("sounds/largeExplosion.wav"));
+
+    private final Sound soundHit1 = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet-flyby-1.wav"));
+    private final Sound soundHit2 = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet-flyby-2.wav"));
+    private final Sound soundHit3 = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet-flyby-3.wav"));
+    private final Sound soundHit4 = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet-flyby-4.wav"));
+    private final Sound soundHit5 = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet-flyby-5.wav"));
+
+    private final Sound[] soundsHit = new Sound[]{soundHit1, soundHit2, soundHit3, soundHit4, soundHit5};
 
     private boolean playGameOverTrack = true;
     private float timerGameOverBack = 0;
+    private float timerDarkSky = 1;
+    private int countDayNight = 0;
+
+    private int checkNextLevel = 10;
+
+    private int randomHitSound;
+    private int frags;
+
+    private StringBuilder sbFrags;
+    private StringBuilder sbLevel;
+
+    private Font font;
+    private Font fontLevel;
 
     private Background background;
     private Background backgroundEnd;
@@ -56,10 +88,12 @@ public class GameScreen extends BaseScreen {
     private BulletPool bulletPool;
     private EnemyPool enemyPool;
     private ExplosionPool explosionPool;
+    private HealthPool healthPool;
 
     private BackButton backButton;
 
     private EnemyEmitter enemyEmitter;
+    private HealthEmitter healthEmitter;
 
     private Health health;
 
@@ -71,6 +105,9 @@ public class GameScreen extends BaseScreen {
     private RestartButton restartButton;
 
     private LogoGame logoGameEnd;
+
+    private boolean largeBoom = false;
+    private boolean isDarkSky = false;
 
     public GameScreen(Game game) {
         this.game = game;
@@ -96,6 +133,7 @@ public class GameScreen extends BaseScreen {
         enemyAirplaneAtlas = new TextureAtlas("textures/enemyAirplaneAtlas.pack");
 
         healthUser = new TextureAtlas("textures/healthUserAtlas.pack");
+        healthAtlas = new TextureAtlas("textures/healthUserAtlas.pack");
 
         explosionAir = new TextureAtlas("textures/blastAtlas.pack");
 
@@ -111,12 +149,14 @@ public class GameScreen extends BaseScreen {
         bulletPool = new BulletPool();
         explosionPool = new ExplosionPool(explosionAir, explosionEnemy);
         enemyPool = new EnemyPool(bulletPool, explosionPool, worldBounds, soundShootEnemy);
+        healthPool = new HealthPool(worldBounds, soundUpHP);
 
         airplane = new Airplane(airplaneAtlas, "airplaneUser", bulletPool, explosionPool);
 
         health = new Health(healthUser, "health");
 
         enemyEmitter = new EnemyEmitter(enemyPool, worldBounds, enemyAirplaneAtlas);
+        healthEmitter = new HealthEmitter(healthPool, worldBounds, healthAtlas);
 
         airplane.startSounds();
 
@@ -128,6 +168,14 @@ public class GameScreen extends BaseScreen {
             else num++;
         }
         backButton = new BackButton(mainButtons, game);
+
+        sbFrags = new StringBuilder();
+        font = new Font("font/font.fnt", "font/font.png");
+        font.setSize(FONT_SIZE);
+
+        sbLevel = new StringBuilder();
+        fontLevel = new Font("font/font.fnt", "font/font.png");
+        fontLevel.setSize(FONT_SIZE);
 
         /** game over **/
         exitButton = new ExitButton(mainButtons);
@@ -179,13 +227,26 @@ public class GameScreen extends BaseScreen {
         bulletPool.dispose();
         enemyPool.dispose();
         explosionPool.dispose();
+        healthPool.dispose();
         explosionAir.dispose();
         airplane.stopSounds();
         healthUser.dispose();
+        healthAtlas.dispose();
         backMusic.dispose();
         gameOverMusic.dispose();
         explosionEnemy.dispose();
+        explosionUser.dispose();
         soundShootEnemy.dispose();
+        soundUpHP.dispose();
+        soundHit1.dispose();
+        soundHit2.dispose();
+        soundHit3.dispose();
+        soundHit4.dispose();
+        soundHit5.dispose();
+
+        font.dispose();
+        fontLevel.dispose();
+
         gameOverLogo.dispose();
     }
 
@@ -211,8 +272,10 @@ public class GameScreen extends BaseScreen {
         }
         /** game over **/
         exitButton.touchDown(touch, pointer, button);
-        restartButton.touchDown(touch, pointer, button);
-        if (restartButton.isMe(touch) || exitButton.isMe(touch)) clickSound.play();
+        if (airplane.isDestroyed()) {
+            restartButton.touchDown(touch, pointer, button);
+            if (restartButton.isMe(touch) || exitButton.isMe(touch)) clickSound.play();
+        }
         return false;
     }
 
@@ -230,11 +293,23 @@ public class GameScreen extends BaseScreen {
         for (Cloudy cloudy : cloudy) {
             cloudy.update(deltaTime);
         }
-        airplane.update(deltaTime);
         if (!airplane.isDestroyed()) {
+            randomHitSound = Rnd.getRandomInteger(0, 4);
+            airplane.update(deltaTime);
             bulletPool.updateActiveObjects(deltaTime);
             enemyPool.updateActiveObjects(deltaTime);
+            if (airplane.isLevelUp()) {
+                airplane.setLevelUp(false);
+                enemyEmitter.speedUpGenerate();
+                forestBack.setSpeedUp(0.1f);
+                forestBack2.setSpeedUp(0.1f);
+                countDayNight++;
+                if (countDayNight == 4) {
+                    countDayNight = 0;
+                }
+            }
             enemyEmitter.generate(deltaTime);
+            healthEmitter.generate(deltaTime);
             if (airplane.getHp() <= 4) {
                 health.setCurrentFrame(0);
                 health.update(deltaTime);
@@ -246,7 +321,13 @@ public class GameScreen extends BaseScreen {
                 health.update(deltaTime);
             }
         }
+        forestBack.update(deltaTime);
+        forestBack2.update(deltaTime);
         if (airplane.isDestroyed()) {
+            if (!largeBoom) {
+                largeBoom = true;
+                explosionUser.play();
+            }
             airplane.setDestroy(true);
             backMusic.stop();
             if (playGameOverTrack) {
@@ -256,8 +337,7 @@ public class GameScreen extends BaseScreen {
             airplane.stopSounds();
         }
         explosionPool.updateActiveObjects(deltaTime);
-        forestBack.update(deltaTime);
-        forestBack2.update(deltaTime);
+        healthPool.updateActiveObjects(deltaTime);
     }
 
     private void checkCollision() {
@@ -280,6 +360,7 @@ public class GameScreen extends BaseScreen {
                 if (!airplane.isOutside(bullet)) {
                     airplane.damage(bullet.getDamage());
                     bullet.destroy();
+                    soundsHit[randomHitSound].play(0.7f);
                 }
                 continue;
             }
@@ -287,8 +368,26 @@ public class GameScreen extends BaseScreen {
                 if (enemy.isBulletCollision(bullet)) {
                     enemy.damage(bullet.getDamage());
                     enemy.setCheckDirectY(false);
+                    if (enemy.isDestroyed()) {
+                        frags += 1;
+                    }
+                    if (frags >= checkNextLevel) {
+                        airplane.setLevel(airplane.getLevel() + 1);
+                        checkNextLevel += 10;
+                        airplane.setLevelUp(true);
+                    }
                     bullet.destroy();
+                    soundsHit[randomHitSound].play(0.7f);
                 }
+            }
+        }
+
+        List<HealthUp> healths = healthPool.getActiveObjects();
+        for (HealthUp health : healths) {
+            if (!health.isDestroyed() && !airplane.isOutside(health)) {
+                health.setCheckDirectY(false);
+                health.damage(100);
+                airplane.setHp(airplane.getHp() + 2);
             }
         }
     }
@@ -297,6 +396,7 @@ public class GameScreen extends BaseScreen {
         bulletPool.freeAllDestroyed();
         enemyPool.freeAllDestroyed();
         explosionPool.freeAllDestroyed();
+        healthPool.freeAllDestroyed();
     }
 
     private void draw() {
@@ -310,27 +410,47 @@ public class GameScreen extends BaseScreen {
             batch.setColor(1, 1, 1, timerGameOverBack);
             backgroundEnd.draw(batch);
             batch.setColor(1, 1, 1, 1);
+            for (Cloudy cloudy : cloudy) {
+                cloudy.draw(batch);
+            }
             /** game over **/
         } else {
             background.draw(batch);
-        }
-        for (Cloudy cloudy : cloudy) {
-            cloudy.draw(batch);
+            for (Cloudy cloudy : cloudy) {
+                cloudy.draw(batch);
+            }
         }
         if (!airplane.isDestroyed()) {
+            if (countDayNight >= 2) {
+                if (timerDarkSky >= 0.3f) {
+                    timerDarkSky -= 0.001f;
+                    batch.setColor(timerDarkSky, timerDarkSky, timerDarkSky, 1);
+                }
+            } else {
+                if (timerDarkSky <= 1f) {
+                    timerDarkSky += 0.001f;
+                    batch.setColor(timerDarkSky, timerDarkSky, timerDarkSky, 1);
+                }
+            }
+            background.draw(batch);
+            for (Cloudy cloudy : cloudy) {
+                cloudy.draw(batch);
+            }
             forestBack.draw(batch);
             forestBack2.draw(batch);
+            batch.setColor(1, 1, 1, 1);
             bulletPool.drawActiveObjects(batch);
             enemyPool.drawActiveObjects(batch);
             airplane.draw(batch);
             health.draw(batch);
         }
         explosionPool.drawActiveObjects(batch);
+        healthPool.drawActiveObjects(batch);
         backButton.draw(batch);
         if (airplane.isDestroyed()) {
             airplane.setDestroy(true);
             if (timerGameOverBack <= 1f) {
-                batch.setColor(1, 1, 1, 1 - timerGameOverBack);
+                batch.setColor(timerDarkSky, timerDarkSky, timerDarkSky, 1 - timerGameOverBack);
                 forestBack.draw(batch);
                 forestBack2.draw(batch);
                 batch.setColor(1, 1, 1, 1);
@@ -338,6 +458,15 @@ public class GameScreen extends BaseScreen {
             logoGameEnd.draw(batch);
             restartButton.draw(batch);
         }
+        printInfo();
+        batch.setColor(timerDarkSky, timerDarkSky, timerDarkSky, 1);
         batch.end();
+    }
+
+    private void printInfo() {
+        sbFrags.setLength(0);
+        sbLevel.setLength(0);
+        font.draw(batch, sbFrags.append(FRAGS).append(frags), worldBounds.getLeft() + 0.5f, worldBounds.getTop() - 0.03f);
+        fontLevel.draw(batch, sbLevel.append(LEVEL).append(airplane.getLevel()), worldBounds.getLeft() + worldBounds.getRight(), worldBounds.getTop() - 0.03f);
     }
 }

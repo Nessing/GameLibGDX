@@ -23,9 +23,17 @@ public class Airplane extends Ship {
     private int upPointer = INVALID_POINTER;
     private int downPointer = INVALID_POINTER;
 
+    private static int level = 1;
+    private boolean isLevelUp = false;
+
+    private float lowHp = -0.05f;
+    private float overLowHp = -0.1f;
+
     private boolean isPullUp = false;
     private boolean isLowHealth = false;
     private boolean isDestroy = false;
+    private boolean isMoveStop = true;
+
     private boolean isPlayingAlarm;
     private boolean isPlayingSound;
     private boolean isPressedLeft;
@@ -36,6 +44,26 @@ public class Airplane extends Ship {
     public void setDestroy(boolean destroy) {
         isDestroy = destroy;
     }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        Airplane.level = level;
+    }
+
+    public boolean isLevelUp() {
+        return isLevelUp;
+    }
+
+    public void setLevelUp(boolean levelUp) {
+        isLevelUp = levelUp;
+        hp += 2;
+        this.reloadInterval -= 0.01f;
+    }
+
+
 
     public Airplane(TextureAtlas textureAtlas, String name, BulletPool bulletPool, ExplosionPool explosionPool) {
         super(textureAtlas.findRegion(name), 2, 1, 2);
@@ -52,7 +80,7 @@ public class Airplane extends Ship {
         this.direction = new Vector2();
         this.pos.set(-0.6f, 0);
         this.speed = 0.3f;
-        this.volumeShoot = 0.1f;
+        this.volumeShoot = 0.05f;
     }
 
     @Override
@@ -65,6 +93,7 @@ public class Airplane extends Ship {
     // 51 ↑  47 ↓  29 ←  32 →
     @Override
     public boolean keyDown(int button) {
+        isMoveStop = false;
         switch (button) {
             case Input.Keys.W:
             case Input.Keys.UP:
@@ -168,6 +197,13 @@ public class Airplane extends Ship {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
+        if (isMoveStop) {
+            if (hp <= 4) {
+                direction.y = overLowHp;
+            } else if (hp <= 10) {
+                direction.y = lowHp;
+            }
+        }
         positionBullet.set(pos.x + 0.2f, pos.y);
         if (getLeft() <= worldBounds.getLeft()) {
             setLeft(worldBounds.getLeft());
@@ -226,11 +262,23 @@ public class Airplane extends Ship {
     }
 
     private void moveRight() {
-        direction.set(speed, 0);
+        if (hp <= 4) {
+            direction.set(speed, overLowHp);
+        } else if (hp <= 10) {
+            direction.set(speed, lowHp);
+        } else {
+            direction.set(speed, 0);
+        }
     }
 
     private void moveLeft() {
-        direction.set(-speed, 0);
+        if (hp <= 4) {
+            direction.set(-speed, overLowHp);
+        } else if (hp <= 10) {
+            direction.set(-speed, lowHp);
+        } else {
+            direction.set(-speed, 0);
+        }
     }
 
     private void moveUpAndRight() {
@@ -251,6 +299,7 @@ public class Airplane extends Ship {
 
     private void moveStop() {
         direction.set(0, 0);
+        isMoveStop = true;
     }
 
     public void startSounds() {
@@ -258,6 +307,8 @@ public class Airplane extends Ship {
     }
 
     public void stopSounds() {
+        userAlarm.stop();
+        userPullUp.stop();
         userEngine.dispose();
         userAlarm.dispose();
         soundShoot.dispose();

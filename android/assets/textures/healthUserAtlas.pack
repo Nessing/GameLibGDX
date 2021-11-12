@@ -10,3 +10,10 @@ health
   orig: 1069, 300
   offset: 0, 0
   index: -1
+repair
+  rotate: false
+  xy: 1072, 11
+  size: 350, 290
+  orig: 350, 290
+  offset: 0, 0
+  index: -1

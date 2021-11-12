@@ -17,4 +17,8 @@ public class Rnd {
     public static float nextFloat(float min, float max) {
         return random.nextFloat() * (max - min) + min;
     }
+
+    public static int getRandomInteger(int maximum, int minimum) {
+        return ((int) (Math.random()*(maximum - minimum))) + minimum;
+    }
 }

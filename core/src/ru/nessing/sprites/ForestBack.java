@@ -9,8 +9,14 @@ import ru.nessing.math.Rect;
 
 public class ForestBack extends Sprite {
 
-    private final Vector2 speed;
+    private float speedUp = -0.2f;
+
+    private Vector2 speed;
     private Rect worldBounds;
+
+    public void setSpeedUp(float speedUp) {
+        this.speedUp -= speedUp;
+    }
 
     public ForestBack(Texture forest) {
         super(new TextureRegion(forest));
@@ -29,6 +35,7 @@ public class ForestBack extends Sprite {
 
     @Override
     public void update(float deltaTime) {
+        speed.x = speedUp;
         pos.mulAdd(speed, deltaTime);
         checkBounds();
     }
