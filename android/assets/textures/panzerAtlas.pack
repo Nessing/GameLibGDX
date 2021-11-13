@@ -1,0 +1,19 @@
+
+panzerAtlas.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+panzer
+  rotate: false
+  xy: 1, 1
+  size: 927, 870
+  orig: 927, 870
+  offset: 0, 0
+  index: -1
+bullet
+  rotate: false
+  xy: 930, 571
+  size: 500, 300
+  orig: 500, 300
+  offset: 0, 0
+  index: -1

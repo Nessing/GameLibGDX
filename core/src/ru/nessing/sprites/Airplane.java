@@ -63,7 +63,13 @@ public class Airplane extends Ship {
         this.reloadInterval -= 0.01f;
     }
 
+    public void setReloadInterval(float interval) {
+        this.reloadInterval = interval;
+    }
 
+    public float getReloadInterval() {
+        return this.reloadInterval;
+    }
 
     public Airplane(TextureAtlas textureAtlas, String name, BulletPool bulletPool, ExplosionPool explosionPool) {
         super(textureAtlas.findRegion(name), 2, 1, 2);

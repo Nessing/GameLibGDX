@@ -15,8 +15,6 @@ public class EnemyAirplane extends Ship {
 
     private boolean checkDirectY = false;
 
-    private float speedAfterDestroy;
-
     private final Vector2 speedNormal = new Vector2();
 
     public void setCheckDirectY(boolean checkDirectY) {
@@ -32,7 +30,6 @@ public class EnemyAirplane extends Ship {
         positionBullet = new Vector2();
         this.direction = new Vector2();
         this.volumeShoot = 0.2f;
-        speedAfterDestroy = speed;
     }
 
     @Override

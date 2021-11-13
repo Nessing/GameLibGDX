@@ -11,7 +11,7 @@ import ru.nessing.sprites.HealthUp;
 
 public class HealthEmitter {
 
-    private static float generateInterval = 20f;
+    private static float generateInterval = 5f;
 
     private static final float HELPER_HEIGHT = 0.07f;
 

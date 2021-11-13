@@ -5,14 +5,21 @@ filter: Nearest,Nearest
 repeat: none
 health
   rotate: false
-  xy: 1, 1
+  xy: 1, 101
   size: 1069, 300
   orig: 1069, 300
   offset: 0, 0
   index: -1
+minigun
+  rotate: false
+  xy: 1072, 1
+  size: 920, 400
+  orig: 920, 400
+  offset: 0, 0
+  index: -1
 repair
   rotate: false
-  xy: 1072, 11
+  xy: 1994, 111
   size: 350, 290
   orig: 350, 290
   offset: 0, 0
