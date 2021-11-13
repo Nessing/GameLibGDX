@@ -33,9 +33,9 @@ public class EnemyLandEmitter {
 
     private final TextureRegion[] enemySmallRegions;
 
-    private final Vector2 enemySmallSpeed = new Vector2(-0.3f, 0);
+    private final Vector2 enemySmallSpeed = new Vector2(-0.55f, 0);
 
-    private final Vector2 enemySmallBulletSpeed = new Vector2(-0.5f, 0);
+    private final Vector2 enemySmallBulletSpeed = new Vector2(-0.6f, 0);
 
     public EnemyLandEmitter(EnemyLandPool enemyPool, Rect worldBounds, TextureAtlas atlas) {
         this.enemyLandPool = enemyPool;

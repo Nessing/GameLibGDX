@@ -13,7 +13,7 @@ import ru.nessing.sprites.SuperShotGet;
 
 public class SuperShotEmitter {
 
-    private static float generateInterval = 2f;
+    private static float generateInterval = 30f;
 
     private static final float HELPER_HEIGHT = 0.07f;
 

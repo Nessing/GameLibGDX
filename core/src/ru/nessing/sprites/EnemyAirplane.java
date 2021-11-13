@@ -45,7 +45,7 @@ public class EnemyAirplane extends Ship {
         } else {
             reloadTimer = reloadInterval * 0.9f;
         }
-        if (getBottom() <= worldBounds.getBottom() + 0.2f) direction.y = Rnd.nextFloat(0.1f, 0.1f);
+        if (getBottom() <= worldBounds.getBottom() + 0.12f) direction.y = Rnd.nextFloat(0.1f, 0.1f);
         else if (getTop() >= worldBounds.getTop()) direction.y = Rnd.nextFloat(-0.1f, -0.1f);
 
         if (getLeft() < worldBounds.getLeft() - getWidth()) {

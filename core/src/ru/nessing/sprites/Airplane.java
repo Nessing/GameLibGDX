@@ -247,7 +247,7 @@ public class Airplane extends Ship {
                 isLowHealth = false;
             }
             if (isLowHealth && !isPlayingAlarm) {
-                userAlarm.loop(0.12f);
+                userAlarm.loop(0.2f);
                 isPlayingAlarm = true;
             } else if (!isLowHealth && isPlayingAlarm) {
                 userAlarm.stop();
