@@ -22,6 +22,8 @@ public class Airplane extends Ship {
 
     private int upPointer = INVALID_POINTER;
     private int downPointer = INVALID_POINTER;
+    private int rightPointer = INVALID_POINTER;
+    private int leftPointer = INVALID_POINTER;
 
     private static int level = 1;
     private boolean isLevelUp = false;
@@ -173,14 +175,23 @@ public class Airplane extends Ship {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-        if (touch.y > 0) {
+        if (touch.y > 0.2f && touch.x < 0) {
             if (upPointer != INVALID_POINTER) return false;
             else upPointer = pointer;
             moveUp();
-        } else if (touch.y < 0) {
+        } else if (touch.y < -0.2f && touch.x < 0) {
             if (downPointer != INVALID_POINTER) return false;
             else downPointer = pointer;
             moveDown();
+        } else if (touch.x > 0) {
+            if (rightPointer != INVALID_POINTER) return false;
+            else rightPointer = pointer;
+            moveRight();
+        }
+        else if (touch.x < 0) {
+            if (leftPointer != INVALID_POINTER) return false;
+            else leftPointer = pointer;
+            moveLeft();
         }
         return false;
     }
@@ -194,6 +205,14 @@ public class Airplane extends Ship {
         } else if (pointer == downPointer) {
             downPointer = INVALID_POINTER;
             if (upPointer != INVALID_POINTER) moveUp();
+            else moveStop();
+        } else if (pointer == rightPointer) {
+            rightPointer = INVALID_POINTER;
+            if (leftPointer != INVALID_POINTER) moveLeft();
+            else moveStop();
+        } else if (pointer == leftPointer) {
+            leftPointer = INVALID_POINTER;
+            if (rightPointer != INVALID_POINTER) moveRight();
             else moveStop();
         }
         moveStop();
