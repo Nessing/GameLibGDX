@@ -25,6 +25,10 @@ public class Airplane extends Ship {
     private int rightPointer = INVALID_POINTER;
     private int leftPointer = INVALID_POINTER;
 
+    private boolean touchUp = false;
+    private boolean leftRightDrag = false;
+    private Vector2 startPos = new Vector2();
+
     private static int level = 1;
     private boolean isLevelUp = false;
 
@@ -175,29 +179,31 @@ public class Airplane extends Ship {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-        if (touch.y > 0.2f && touch.x < 0) {
-            if (upPointer != INVALID_POINTER) return false;
-            else upPointer = pointer;
-            moveUp();
-        } else if (touch.y < -0.2f && touch.x < 0) {
-            if (downPointer != INVALID_POINTER) return false;
-            else downPointer = pointer;
-            moveDown();
-        } else if (touch.x > 0) {
-            if (rightPointer != INVALID_POINTER) return false;
-            else rightPointer = pointer;
-            moveRight();
-        }
-        else if (touch.x < 0) {
-            if (leftPointer != INVALID_POINTER) return false;
-            else leftPointer = pointer;
-            moveLeft();
-        }
+//        if (touch.y > 0.2f && touch.x < 0) {
+//            if (upPointer != INVALID_POINTER) return false;
+//            else upPointer = pointer;
+//            moveUp();
+//        } else if (touch.y < -0.2f && touch.x < 0) {
+//            if (downPointer != INVALID_POINTER) return false;
+//            else downPointer = pointer;
+//            moveDown();
+//        } else if (touch.x > 0) {
+//            if (rightPointer != INVALID_POINTER) return false;
+//            else rightPointer = pointer;
+//            moveRight();
+//        }
+//        else if (touch.x < 0) {
+//            if (leftPointer != INVALID_POINTER) return false;
+//            else leftPointer = pointer;
+//            moveLeft();
+//        }
+        startPos.set(touch.x, touch.y);
         return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer, int button) {
+
         if (pointer == upPointer) {
             upPointer = INVALID_POINTER;
             if (downPointer != INVALID_POINTER) moveDown();
@@ -216,6 +222,20 @@ public class Airplane extends Ship {
             else moveStop();
         }
         moveStop();
+        leftRightDrag = false;
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(Vector2 touch, int pointer) {
+        if (!touchUp) {
+            if (!leftRightDrag) {
+                if (startPos.y < touch.y - 0.055f) moveUp();
+                else if (startPos.y > touch.y + 0.055f) moveDown();
+                else if (startPos.x < touch.x - 0.055f) moveRight();
+                else if (startPos.x > touch.x + 0.055f) moveLeft();
+            }
+        } else moveStop();
         return false;
     }
 
@@ -324,7 +344,9 @@ public class Airplane extends Ship {
 
     private void moveStop() {
         direction.set(0, 0);
+        startPos.set(0, 0);
         isMoveStop = true;
+        touchUp = false;
     }
 
     public void startSounds() {

@@ -79,7 +79,7 @@ public class GameScreen extends BaseScreen {
     private float timerDarkSky = 1;
     private int countDayNight = 0;
 
-    private int checkNextLevel = 10;
+    private int checkNextLevel = 5;
 
     private int randomHitSound;
     private int frags;
@@ -321,6 +321,12 @@ public class GameScreen extends BaseScreen {
         return false;
     }
 
+    @Override
+    public boolean touchDragged(Vector2 touch, int pointer) {
+        airplane.touchDragged(touch, pointer);
+        return false;
+    }
+
     private void update(float deltaTime) {
         for (Cloudy cloudy : cloudy) {
             cloudy.update(deltaTime);
@@ -433,7 +439,7 @@ public class GameScreen extends BaseScreen {
                     }
                     if (frags >= checkNextLevel) {
                         airplane.setLevel(airplane.getLevel() + 1);
-                        checkNextLevel += 10;
+                        checkNextLevel += 5;
                         levelUp.play();
                         airplane.setLevelUp(true);
                     }
