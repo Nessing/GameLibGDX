@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.nessing.base.Ship;
@@ -19,6 +20,8 @@ public class Airplane extends Ship {
     private final Sound userPullUp = Gdx.audio.newSound(Gdx.files.internal("sounds/pullUpAlarm.mp3"));
     //    private final Sound soundShoot = Gdx.audio.newSound(Gdx.files.internal("sounds/shotRifle.wav"));
     private final Sound userAlarm = Gdx.audio.newSound(Gdx.files.internal("sounds/alarm.mp3"));
+
+
 
     private int upPointer = INVALID_POINTER;
     private int downPointer = INVALID_POINTER;
@@ -228,14 +231,14 @@ public class Airplane extends Ship {
 
     @Override
     public boolean touchDragged(Vector2 touch, int pointer) {
-        if (!touchUp) {
-            if (!leftRightDrag) {
-                if (startPos.y < touch.y - 0.055f) moveUp();
-                else if (startPos.y > touch.y + 0.055f) moveDown();
-                else if (startPos.x < touch.x - 0.055f) moveRight();
-                else if (startPos.x > touch.x + 0.055f) moveLeft();
-            }
-        } else moveStop();
+//        if (!touchUp) {
+//            if (!leftRightDrag) {
+//                if (startPos.y < touch.y - 0.055f) moveUp();
+//                else if (startPos.y > touch.y + 0.055f) moveDown();
+//                else if (startPos.x < touch.x - 0.055f) moveRight();
+//                else if (startPos.x > touch.x + 0.055f) moveLeft();
+//            }
+//        } else moveStop();
         return false;
     }
 

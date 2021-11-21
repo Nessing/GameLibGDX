@@ -2,6 +2,7 @@ package ru.nessing.screen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
@@ -21,6 +22,7 @@ import ru.nessing.pool.ExplosionPool;
 import ru.nessing.pool.HealthPool;
 import ru.nessing.pool.SuperShotPool;
 import ru.nessing.sprites.Airplane;
+import ru.nessing.sprites.ArrowRight;
 import ru.nessing.sprites.BackButton;
 import ru.nessing.sprites.Background;
 import ru.nessing.sprites.Bullet;
@@ -51,7 +53,8 @@ public class GameScreen extends BaseScreen {
 
     private Texture bg, forestTexture, bgEnd, gameOverLogo;
     private TextureAtlas sky, mainButtons, airplaneAtlas,
-            enemyAirplaneAtlas, explosionAir, UserComponents, enemyPanzerAtlas;
+            enemyAirplaneAtlas, explosionAir, UserComponents, enemyPanzerAtlas,
+            arrowsAtlas;
 
     private final Sound clickSound = Gdx.audio.newSound(Gdx.files.internal("sounds/click.wav"));
     private final Music backMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/Single for gameScreen.mp3"));
@@ -122,6 +125,11 @@ public class GameScreen extends BaseScreen {
     private StartButton startButton;
     private RestartButton restartButton;
 
+    private ArrowRight arrowRight;
+    private ArrowRight arrowLeft;
+    private ArrowRight arrowUp;
+    private ArrowRight arrowDown;
+
     private LogoGame logoGameEnd;
 
     private boolean largeBoom = false;
@@ -145,6 +153,7 @@ public class GameScreen extends BaseScreen {
         bg = new Texture("textures/skyBack.png");
         bgEnd = new Texture("textures/skyBackEnd.png");
         mainButtons = new TextureAtlas("textures/mainButtonAtlas.pack");
+        arrowsAtlas = new TextureAtlas("textures/arrowAtlas.pack");
         forestTexture = new Texture("textures/forest.png");
         airplaneAtlas = new TextureAtlas("textures/userAirplaneAtlas.pack");
         enemyAirplaneAtlas = new TextureAtlas("textures/enemyAirplaneAtlas.pack");
@@ -205,6 +214,11 @@ public class GameScreen extends BaseScreen {
         exitButton = new ExitButton(mainButtons);
         startButton = new StartButton(mainButtons, game);
         restartButton = new RestartButton(mainButtons, game);
+
+        arrowRight = new ArrowRight(arrowsAtlas, "arrow_right");
+        arrowLeft = new ArrowRight(arrowsAtlas, "arrow_left");
+        arrowDown = new ArrowRight(arrowsAtlas, "arrow_down");
+        arrowUp = new ArrowRight(arrowsAtlas, "arrow_up");
     }
 
     @Override
@@ -235,6 +249,11 @@ public class GameScreen extends BaseScreen {
         exitButton.resize(worldBounds);
         startButton.resize(worldBounds);
         restartButton.resize(worldBounds);
+
+        arrowRight.resize(worldBounds);
+        arrowLeft.resize(worldBounds);
+        arrowDown.resize(worldBounds);
+        arrowUp.resize(worldBounds);
     }
 
     @Override
@@ -298,6 +317,14 @@ public class GameScreen extends BaseScreen {
     public boolean touchDown(Vector2 touch, int pointer, int button) {
         airplane.touchDown(touch, pointer, button);
         backButton.touchDown(touch, pointer, button);
+        arrowRight.touchDown(touch, pointer, button);
+        arrowLeft.touchDown(touch, pointer, button);
+        arrowDown.touchDown(touch, pointer, button);
+        arrowUp.touchDown(touch, pointer, button);
+        if (arrowRight.isMe(touch)) airplane.keyDown(Input.Keys.D);
+        else if (arrowLeft.isMe(touch)) airplane.keyDown(Input.Keys.A);
+        else if (arrowUp.isMe(touch)) airplane.keyDown(Input.Keys.W);
+        else if (arrowDown.isMe(touch)) airplane.keyDown(Input.Keys.S);
         if (backButton.isMe(touch)) {
             clickSound.play();
             airplane.pressButtonStopMove();
@@ -317,6 +344,25 @@ public class GameScreen extends BaseScreen {
         backButton.touchUp(touch, pointer, button);
         /** game over **/
         exitButton.touchUp(touch, pointer, button);
+        arrowRight.touchUp(touch, pointer, button);
+        arrowLeft.touchUp(touch, pointer, button);
+        arrowDown.touchUp(touch, pointer, button);
+        arrowUp.touchUp(touch, pointer, button);
+        if (!arrowUp.isMe(touch)
+                || !arrowRight.isMe(touch)
+                || !arrowLeft.isMe(touch)
+                || !arrowDown.isMe(touch)) {
+        }
+
+        if (arrowUp.isMe(touch)) airplane.keyUp(Input.Keys.W);
+        if (arrowRight.isMe(touch)) airplane.keyUp(Input.Keys.D);
+        if (arrowLeft.isMe(touch)) airplane.keyUp(Input.Keys.A);
+        if (arrowDown.isMe(touch)) airplane.keyUp(Input.Keys.S);
+
+        if (!arrowUp.isMe(touch)) airplane.keyUp(Input.Keys.W);
+        if (!arrowRight.isMe(touch)) airplane.keyUp(Input.Keys.D);
+        if (!arrowLeft.isMe(touch)) airplane.keyUp(Input.Keys.A);
+        if (!arrowDown.isMe(touch)) airplane.keyUp(Input.Keys.S);
         restartButton.touchUp(touch, pointer, button);
         return false;
     }
@@ -548,6 +594,10 @@ public class GameScreen extends BaseScreen {
         healthPool.drawActiveObjects(batch);
         superShotPool.drawActiveObjects(batch);
         backButton.draw(batch);
+        arrowRight.draw(batch);
+        arrowLeft.draw(batch);
+        arrowDown.draw(batch);
+        arrowUp.draw(batch);
         if (airplane.isDestroyed()) {
             airplane.setDestroy(true);
             if (timerGameOverBack <= 1f) {

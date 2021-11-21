@@ -1,0 +1,38 @@
+
+arrowAtlas.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+arrow_down
+  rotate: false
+  xy: 1, 1
+  size: 457, 600
+  orig: 457, 600
+  offset: 0, 0
+  index: -1
+arrow_up
+  rotate: false
+  xy: 460, 1
+  size: 457, 600
+  orig: 457, 600
+  offset: 0, 0
+  index: -1
+
+arrowAtlas2.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+arrow_left
+  rotate: false
+  xy: 1, 460
+  size: 600, 457
+  orig: 600, 457
+  offset: 0, 0
+  index: -1
+arrow_right
+  rotate: false
+  xy: 1, 1
+  size: 600, 457
+  orig: 600, 457
+  offset: 0, 0
+  index: -1
